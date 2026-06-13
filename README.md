@@ -13,7 +13,8 @@ en bas de l'écran pendant que vous parlez.
 
 ## Fonctionnement
 
-1. Maintenez le raccourci (par défaut **F9**).
+1. Maintenez le raccourci (par défaut **Ctrl+Alt+Space** sur macOS/Linux,
+   **Ctrl+Shift+Space** sur Windows).
 2. La bulle apparaît en bas au centre et s'anime avec votre voix ; la
    transcription partielle s'y affiche en direct.
 3. Le texte est tapé **en direct** dans le champ focalisé (mode « En direct »),
@@ -42,10 +43,9 @@ Build de production : `deno task tauri build`.
 
 - Les modèles sont stockés dans le dossier de données de l'app
   (`~/Library/Application Support/com.leomartin.greffe/models` sur macOS).
-- Si votre raccourci contient un modificateur (Cmd/Ctrl/Alt), préférez le mode
-  d'insertion « À la fin » : taper du texte pendant que le modificateur est
-  physiquement enfoncé peut déclencher des raccourcis dans l'app cible. Une
-  touche seule type F9 ne pose aucun problème en mode « En direct ».
+- Si votre raccourci contient un modificateur (Cmd/Ctrl/Alt/Shift), préférez le
+  mode d'insertion « À la fin » : taper du texte pendant que le modificateur est
+  physiquement enfoncé peut déclencher des raccourcis dans l'app cible.
 - Whisper ne « streame » pas nativement : les partiels sont décodés sur une
   fenêtre glissante (~8 s max) toutes les ~1 s ; aux pauses de parole, le texte
   décodé est « engagé » et la fenêtre repart, ce qui garde une latence

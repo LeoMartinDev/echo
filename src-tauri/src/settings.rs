@@ -19,7 +19,7 @@ pub struct AppSettings {
     pub model_id: String,
     /// BCP-47 language code ("fr", "en", …) or None for automatic detection.
     pub language: Option<String>,
-    /// Push-to-talk shortcut accelerator, e.g. "F9" or "Ctrl+Space".
+    /// Push-to-talk shortcut accelerator, e.g. "Ctrl+Alt+Space".
     pub hotkey: String,
     pub insertion_mode: InsertionMode,
     /// Keep a local history of transcriptions.
@@ -35,12 +35,27 @@ impl Default for AppSettings {
         Self {
             model_id: "parakeet-tdt-0.6b-v3".to_string(),
             language: None,
-            hotkey: "F9".to_string(),
-            insertion_mode: InsertionMode::Live,
+            hotkey: default_hotkey().to_string(),
+            insertion_mode: InsertionMode::OnRelease,
             history_enabled: true,
             autostart: false,
             ui_language: None,
         }
+    }
+}
+
+fn default_hotkey() -> &'static str {
+    #[cfg(target_os = "windows")]
+    {
+        "Ctrl+Shift+Space"
+    }
+    #[cfg(target_os = "macos")]
+    {
+        "Ctrl+Alt+Space"
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        "Ctrl+Alt+Space"
     }
 }
 

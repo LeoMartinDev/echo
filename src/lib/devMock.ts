@@ -8,8 +8,8 @@ export function installDevMockIfNeeded() {
   let settings = {
     model_id: "parakeet-tdt-0.6b-v3",
     language: null as string | null,
-    hotkey: "F9",
-    insertion_mode: "live",
+    hotkey: "Ctrl+Alt+Space",
+    insertion_mode: "on_release",
     history_enabled: true,
     autostart: false,
     ui_language: null as string | null,

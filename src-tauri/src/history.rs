@@ -56,7 +56,7 @@ pub fn append(app: &AppHandle, text: &str, model_id: &str, duration_secs: f32) {
         entries.drain(..entries.len() - MAX_ENTRIES);
     }
     if let Err(e) = save(app, &entries) {
-        eprintln!("[greffe] history not saved: {e}");
+        eprintln!("[echo] history not saved: {e}");
     }
 }
 

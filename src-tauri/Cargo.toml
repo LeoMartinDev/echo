@@ -1,12 +1,12 @@
 [package]
-name = "greffe"
+name = "echo"
 version = "0.1.0"
 description = "Dictée vocale locale — maintenez une touche, parlez, le texte s'écrit."
 authors = ["Léo Martin"]
 edition = "2021"
 
 [lib]
-name = "greffe_lib"
+name = "echo_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -45,6 +45,9 @@ uiautomation = "0.25"
 
 [target.'cfg(not(target_os = "macos"))'.dependencies]
 transcribe-rs = { version = "0.3", features = ["onnx", "whisper-cpp"] }
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2"
 
 [profile.release]
 lto = true

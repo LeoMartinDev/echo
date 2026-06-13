@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
   <key>NSMicrophoneUsageDescription</key>
-  <string>Greffe utilise le micro pour transcrire votre voix en texte, localement sur votre machine.</string>
+  <string>Echo utilise le micro pour transcrire votre voix en texte, localement sur votre machine.</string>
 </dict>
 </plist>

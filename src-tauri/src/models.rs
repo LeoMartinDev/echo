@@ -110,7 +110,7 @@ struct DownloadProgress<'a> {
 }
 
 fn emit_progress(app: &AppHandle, p: DownloadProgress) {
-    let _ = app.emit("greffe://download", &p);
+    let _ = app.emit("echo://download", &p);
 }
 
 pub async fn download(app: AppHandle, id: String) -> Result<(), String> {

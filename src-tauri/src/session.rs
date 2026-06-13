@@ -36,11 +36,11 @@ struct Phase<'a> {
 }
 
 fn emit_phase(app: &AppHandle, phase: &str, message: Option<&str>) {
-    let _ = app.emit("greffe://phase", &Phase { phase, message });
+    let _ = app.emit("echo://phase", &Phase { phase, message });
 }
 
 fn emit_partial(app: &AppHandle, text: &str) {
-    let _ = app.emit("greffe://partial", text);
+    let _ = app.emit("echo://partial", text);
 }
 
 /// Whether the worker for `generation` is still the active session. A later
@@ -108,7 +108,7 @@ fn worker(app: AppHandle, generation: u32) {
     // Best-effort detection: is there a focused text field to type into?
     // Some(false) → warning in the overlay + clipboard fallback at the end.
     let focus_bad = crate::focus::editable_focused() == Some(false);
-    let _ = app.emit("greffe://focus", !focus_bad);
+    let _ = app.emit("echo://focus", !focus_bad);
 
     let mut slot = state.engine.lock().unwrap_or_else(|e| e.into_inner());
 
@@ -134,7 +134,7 @@ fn worker(app: AppHandle, generation: u32) {
     let mut typer = match typing::Typer::new() {
         Ok(t) => Some(t),
         Err(e) => {
-            eprintln!("[greffe] {e}");
+            eprintln!("[echo] {e}");
             None
         }
     };
@@ -187,7 +187,7 @@ fn worker(app: AppHandle, generation: u32) {
             &model_id,
             total_samples as f32 / rate as f32,
         );
-        let _ = app.emit("greffe://history", ());
+        let _ = app.emit("echo://history", ());
     }
 
     let mut typed_ok = false;
@@ -201,7 +201,7 @@ fn worker(app: AppHandle, generation: u32) {
         };
         match result {
             Ok(()) => typed_ok = true,
-            Err(e) => eprintln!("[greffe] {e}"),
+            Err(e) => eprintln!("[echo] {e}"),
         }
     }
 
@@ -210,7 +210,7 @@ fn worker(app: AppHandle, generation: u32) {
     if !final_text.is_empty() && (focus_bad || !typed_ok) {
         use tauri_plugin_clipboard_manager::ClipboardExt;
         if let Err(e) = app.clipboard().write_text(final_text.clone()) {
-            eprintln!("[greffe] clipboard: {e}");
+            eprintln!("[echo] clipboard: {e}");
         }
     }
 
@@ -314,7 +314,7 @@ fn streaming_loop(
             if let Some(t) = typer.as_mut() {
                 if stable.chars().count() >= t.typed_chars() {
                     if let Err(e) = t.reconcile_to(&stable) {
-                        eprintln!("[greffe] {e}");
+                        eprintln!("[echo] {e}");
                     }
                 }
             }
@@ -385,7 +385,7 @@ fn segmented_loop(
         if live {
             if let Some(t) = typer.as_mut() {
                 if let Err(e) = t.extend_to(&committed_text) {
-                    eprintln!("[greffe] {e}");
+                    eprintln!("[echo] {e}");
                 }
             }
         }
@@ -470,7 +470,7 @@ fn join_text(a: &str, b: &str) -> String {
 }
 
 fn show_error(app: &AppHandle, message: &str) {
-    eprintln!("[greffe] error: {message}");
+    eprintln!("[echo] error: {message}");
     show_overlay(app);
     emit_phase(app, "error", Some(message));
     let app = app.clone();

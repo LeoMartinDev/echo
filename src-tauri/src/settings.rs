@@ -24,7 +24,7 @@ pub struct AppSettings {
     pub insertion_mode: InsertionMode,
     /// Keep a local history of transcriptions.
     pub history_enabled: bool,
-    /// Launch Greffe at login.
+    /// Launch Echo at login.
     pub autostart: bool,
     /// UI language: "fr", "en", or None to follow the system.
     pub ui_language: Option<String>,

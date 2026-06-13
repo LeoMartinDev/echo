@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Greffe",
+  "productName": "Echo",
   "version": "0.1.0",
-  "identifier": "com.leomartin.greffe",
+  "identifier": "com.leomartin.echo",
   "build": {
     "beforeDevCommand": "deno task dev",
     "devUrl": "http://localhost:1420",
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Greffe — Réglages",
+        "title": "Echo — Réglages",
         "width": 740,
         "height": 640,
         "minWidth": 560,
@@ -23,7 +23,7 @@
       {
         "label": "overlay",
         "url": "overlay.html",
-        "title": "Greffe",
+        "title": "Echo",
         "width": 116,
         "height": 40,
         "transparent": true,

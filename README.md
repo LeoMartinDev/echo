@@ -1,4 +1,4 @@
-# Greffe
+# Echo
 
 Dictée vocale **100 % locale** : maintenez un raccourci clavier, parlez, le texte
 s'écrit dans l'input de l'application active. Une petite bulle animée s'affiche
@@ -42,7 +42,7 @@ Build de production : `deno task tauri build`.
 ## Notes
 
 - Les modèles sont stockés dans le dossier de données de l'app
-  (`~/Library/Application Support/com.leomartin.greffe/models` sur macOS).
+  (`~/Library/Application Support/com.leomartin.echo/models` sur macOS).
 - Si votre raccourci contient un modificateur (Cmd/Ctrl/Alt/Shift), préférez le
   mode d'insertion « À la fin » : taper du texte pendant que le modificateur est
   physiquement enfoncé peut déclencher des raccourcis dans l'app cible.

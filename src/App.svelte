@@ -58,7 +58,7 @@
     if (isMac) accessibilityStatus(false).then((ok) => (accessibilityOk = ok));
 
     const unsubs: Array<() => void> = [];
-    listen("greffe://history", async () => {
+    listen("echo://history", async () => {
       history = await getHistory();
     }).then((u) => unsubs.push(u));
     // Process RAM: light poll, only while the window is visible.
@@ -78,7 +78,7 @@
       document.removeEventListener("visibilitychange", onVisibility);
     });
 
-    listen<DownloadEvent>("greffe://download", async (e) => {
+    listen<DownloadEvent>("echo://download", async (e) => {
       const { id, received, total, status, error } = e.payload;
       if (status === "done" || status === "error") {
         delete progress[id];
@@ -317,7 +317,7 @@
           stroke-linejoin="round"
         />
       </svg>
-      <h1>greffe</h1>
+      <h1>echo</h1>
       <span class="version">0.1.0</span>
     </div>
     <p class="status">

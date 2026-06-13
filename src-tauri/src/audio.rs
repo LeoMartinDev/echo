@@ -52,7 +52,7 @@ fn capture_thread(
     let sample_format = config.sample_format();
     let stream_config: cpal::StreamConfig = config.into();
 
-    let err_fn = |e| eprintln!("[greffe] erreur du flux audio : {e}");
+    let err_fn = |e| eprintln!("[echo] erreur du flux audio : {e}");
 
     let stream = match sample_format {
         cpal::SampleFormat::F32 => build_stream::<f32>(&device, stream_config, app, samples, channels, err_fn),
@@ -116,7 +116,7 @@ where
                 emit_counter = emit_counter.wrapping_add(1);
                 if count > 0 && emit_counter % 2 == 0 {
                     let rms = (sum_sq / count as f32).sqrt();
-                    let _ = app.emit("greffe://level", rms);
+                    let _ = app.emit("echo://level", rms);
                 }
             },
             err_fn,

@@ -43,7 +43,7 @@ const en = {
   // — system section —
   sec_system: "system",
   autostart_label: "Launch at startup",
-  autostart_hint: "Greffe starts with your session, in the tray",
+  autostart_hint: "Echo starts with your session, in the tray",
   ui_lang_label: "Interface language",
   ui_lang_hint: "language of this window and the menu",
   ui_lang_auto: "system",
@@ -139,7 +139,7 @@ const fr: Dict = {
 
   sec_system: "système",
   autostart_label: "Lancer au démarrage",
-  autostart_hint: "Greffe démarre avec votre session, dans le tray",
+  autostart_hint: "Echo démarre avec votre session, dans le tray",
   ui_lang_label: "Langue de l'interface",
   ui_lang_hint: "langue de cette fenêtre et du menu",
   ui_lang_auto: "système",

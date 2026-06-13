@@ -15,6 +15,7 @@ use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
+use tauri_plugin_updater::UpdaterExt;
 
 #[derive(Serialize)]
 struct ModelInfo {
@@ -245,7 +246,7 @@ fn preload_engine(app: &AppHandle) {
         }
         let mut slot = state.engine.lock().unwrap_or_else(|e| e.into_inner());
         if let Err(e) = slot.ensure_loaded(&app, &model_id) {
-            eprintln!("[greffe] model preload failed: {e}");
+            eprintln!("[echo] model preload failed: {e}");
         }
     });
 }
@@ -267,13 +268,13 @@ fn tray_labels(locale: &str) -> TrayLabels {
     match locale {
         "fr" => TrayLabels {
             open: "Réglages…",
-            quit: "Quitter Greffe",
-            tooltip: "Greffe — dictée vocale",
+            quit: "Quitter Echo",
+            tooltip: "Echo — dictée vocale",
         },
         _ => TrayLabels {
             open: "Settings…",
-            quit: "Quit Greffe",
-            tooltip: "Greffe — voice dictation",
+            quit: "Quit Echo",
+            tooltip: "Echo — voice dictation",
         },
     }
 }
@@ -320,6 +321,23 @@ fn setup_tray(app: &AppHandle, locale: &str) -> tauri::Result<()> {
     Ok(())
 }
 
+fn check_for_updates(app: AppHandle) {
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = update(app).await {
+            eprintln!("[echo] update check failed: {e}");
+        }
+    });
+}
+
+async fn update(app: AppHandle) -> tauri_plugin_updater::Result<()> {
+    let Some(update) = app.updater()?.check().await? else {
+        return Ok(());
+    };
+
+    update.download_and_install(|_, _| {}, || {}).await?;
+    app.restart()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -330,6 +348,7 @@ pub fn run() {
         ))
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             get_settings,
             set_settings,
@@ -358,7 +377,7 @@ pub fn run() {
             setup_tray(&handle, locale)?;
 
             if let Err(e) = register_hotkey(&handle, &hotkey) {
-                eprintln!("[greffe] {e}");
+                eprintln!("[echo] {e}");
                 // Corrupted or taken shortcut: fall back to the default.
                 let fallback = AppSettings::default().hotkey;
                 if register_hotkey(&handle, &fallback).is_ok() {
@@ -370,6 +389,10 @@ pub fn run() {
 
             // Model loaded at launch, not on first shortcut press.
             preload_engine(&handle);
+
+            if !cfg!(debug_assertions) {
+                check_for_updates(handle);
+            }
             Ok(())
         })
         .on_window_event(|window, event| {

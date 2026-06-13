@@ -24,15 +24,15 @@
       .then((s) => setLocale(resolveLocale(s.ui_language)))
       .catch(() => {});
 
-    listen<PhaseEvent>("greffe://phase", (e) => {
+    listen<PhaseEvent>("echo://phase", (e) => {
       phase = e.payload.phase;
     }).then((u) => unsubs.push(u));
 
-    listen<number>("greffe://level", (e) => {
+    listen<number>("echo://level", (e) => {
       level = e.payload;
     }).then((u) => unsubs.push(u));
 
-    listen<boolean>("greffe://focus", (e) => {
+    listen<boolean>("echo://focus", (e) => {
       focusOk = e.payload;
     }).then((u) => unsubs.push(u));
 

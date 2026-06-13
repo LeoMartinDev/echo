@@ -501,8 +501,20 @@ fn show_overlay(app: &AppHandle) {
         let _ = win.set_position(PhysicalPosition::new(x, y));
     }
 
-    let _ = win.set_ignore_cursor_events(true);
-    let _ = win.show();
+    #[cfg(target_os = "linux")]
+    {
+        // GTK only creates the native GdkWindow once the window is shown.
+        // Calling set_ignore_cursor_events() earlier panics inside tao/wry.
+        let _ = win.show();
+        let _ = win.set_ignore_cursor_events(true);
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = win.set_ignore_cursor_events(true);
+        let _ = win.show();
+    }
+
     let _ = win.set_always_on_top(true);
 }
 

@@ -368,11 +368,6 @@ pub fn run() {
                 }
             }
 
-            // The overlay must never intercept mouse events.
-            if let Some(overlay) = app.get_webview_window("overlay") {
-                let _ = overlay.set_ignore_cursor_events(true);
-            }
-
             // Model loaded at launch, not on first shortcut press.
             preload_engine(&handle);
             Ok(())

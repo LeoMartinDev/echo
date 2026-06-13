@@ -53,5 +53,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": ["https://github.com/LeoMartinDev/echo/releases/latest/download/latest.json"],
+      "pubkey": "dummy-key-for-local-dev-only"
+    }
   }
 }

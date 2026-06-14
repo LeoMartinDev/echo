@@ -6,10 +6,10 @@ appears at the bottom of the screen while you speak.
 
 - **Tauri 2 + Svelte 5 + Deno** on macOS, Windows, and Linux.
 - **Swappable local models** depending on the use case: **Parakeet TDT 0.6B v3**
-  (recommended, ONNX, ~25x real-time on CPU, 25 languages), **Whisper Large v3
-  Turbo** (maximum accuracy, ~100 languages, GPU/Metal), and **Whisper Small**
-  (lighter, better for modest machines). Models can be downloaded and switched
-  from the settings window.
+  (recommended, ONNX, ~25x real-time on CPU, 25 languages), **Whisper Small**
+  (lighter, fast enough for live mode with CPU/Metal), and **Whisper Medium**
+  (higher accuracy, ~100 languages). Models can be downloaded and switched from
+  the settings window.
 - **Multilingual** with automatic language detection or a forced language.
 
 ## How it works

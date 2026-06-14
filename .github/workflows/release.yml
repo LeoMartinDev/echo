@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: macos-latest
+          - platform: macos-15
             args: --target aarch64-apple-darwin
             rust-targets: aarch64-apple-darwin
           - platform: ubuntu-22.04
@@ -42,6 +42,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Select stable Xcode for Metal
+        if: startsWith(matrix.platform, 'macos-')
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+
+      - name: Limit macOS native build parallelism
+        if: startsWith(matrix.platform, 'macos-')
+        run: |
+          echo "CARGO_BUILD_JOBS=1" >> "$GITHUB_ENV"
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=1" >> "$GITHUB_ENV"
 
       - name: Install Linux dependencies
         if: startsWith(matrix.platform, 'ubuntu-')

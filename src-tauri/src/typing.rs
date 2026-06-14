@@ -17,10 +17,6 @@ impl Typer {
         Ok(Self { enigo, typed: Vec::new() })
     }
 
-    pub fn typed_chars(&self) -> usize {
-        self.typed.len()
-    }
-
     /// Only writes `text` if it extends what has already been typed.
     pub fn extend_to(&mut self, text: &str) -> Result<(), String> {
         let target: Vec<char> = text.chars().collect();
@@ -62,20 +58,4 @@ impl Typer {
         self.typed = target;
         Ok(())
     }
-}
-
-/// Common prefix (in whole words) between two successive decodes: the "stable"
-/// part that can be typed without risking contradiction later.
-pub fn stable_prefix(prev: &str, current: &str) -> String {
-    let prev_words: Vec<&str> = prev.split_whitespace().collect();
-    let cur_words: Vec<&str> = current.split_whitespace().collect();
-    let mut stable: Vec<&str> = Vec::new();
-    for (p, c) in prev_words.iter().zip(cur_words.iter()) {
-        if p == c {
-            stable.push(c);
-        } else {
-            break;
-        }
-    }
-    stable.join(" ")
 }

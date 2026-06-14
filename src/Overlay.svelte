@@ -69,9 +69,6 @@
   {#if phase === "error"}
     <span class="error-dot" aria-hidden="true"></span>
   {:else if phase === "recording"}
-    {#if !focusOk}
-      <span class="warn-dot" title={t("overlay_no_field")}></span>
-    {/if}
     <div class="bars" aria-hidden="true">
       {#each bars as b}
         <span class="bar" style="height: {(b * 24).toFixed(1)}px"></span>
@@ -154,11 +151,4 @@
     background: #cf7a6d;
   }
 
-  .warn-dot {
-    flex: none;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #c9a35a;
-  }
 </style>

@@ -78,7 +78,7 @@ jobs:
           TAURI_UPDATER_PUBLIC_KEY: ${{ secrets.TAURI_UPDATER_PUBLIC_KEY }}
           RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
-          deno eval --allow-read --allow-write --allow-env '
+          deno eval '
             const endpoint = "https://github.com/LeoMartinDev/echo/releases/latest/download/latest.json";
             const publicKey = Deno.env.get("TAURI_UPDATER_PUBLIC_KEY");
             if (!publicKey) {

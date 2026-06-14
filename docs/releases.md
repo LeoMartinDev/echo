@@ -25,6 +25,10 @@ CI sets `WHISPER_DONT_GENERATE_BINDINGS=1` only on Linux and macOS so
 bindings with `bindgen`; the bundled bindings contain non-MSVC layouts and fail
 to compile on the Windows runner.
 
+The workflow validates signing secrets before starting native builds. The
+`TAURI_SIGNING_PRIVATE_KEY` secret must be the raw private key content generated
+by `tauri signer generate`; it must not be URL-encoded.
+
 ## Built platforms
 
 - macOS Apple Silicon (`macos-14`, `aarch64-apple-darwin`)
@@ -53,16 +57,21 @@ private key signs updater bundles and must never be committed.
 
 ## Date-based versioning
 
-To ensure a real new release on every push, CI computes one SemVer-compatible
-UTC version at the start of the workflow, and every matrix build reuses that
-same version:
+To ensure a real new release on every push, CI computes one UTC SemVer version
+at the start of the workflow, and every matrix build reuses that same version.
+Windows installers reject versions whose major component is greater than 255,
+so the release version uses a compact date encoding instead of a literal
+`YYYY.M.DDHHMMSS` version:
 
 ```text
-YYYY.M.DDHHMMSS
+major = (UTC year - 2000) * 2 + half-year index
+minor = day number inside the current half-year
+patch = floor(seconds since UTC midnight / 2)
 ```
 
-For example, a build created on June 13, 2026 at 09:45:30 UTC becomes
-`2026.6.13094530`.
+For example, a build created on June 14, 2026 at 17:10:21 UTC becomes
+`52.165.30910`. This keeps the version monotonic, date-derived, and compatible
+with Windows Installer numeric limits.
 
 The Tauri updater compares these as SemVer versions. Without a version bump, an
 installed app would not detect an update.

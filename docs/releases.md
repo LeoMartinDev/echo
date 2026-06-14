@@ -9,14 +9,16 @@ current Tauri v2 documentation shows the action line as `@v0`, and the
 tags, not `v1`.
 
 The macOS release build keeps Whisper Metal enabled through the
-`whisper-metal` feature. The workflow pins the macOS job to `macos-15`, selects
-Xcode 16.2, and limits native build parallelism because the default Xcode 16.4
-toolchain on the macOS 15 arm64 image failed while building
-`whisper-rs-sys v0.15.0` with Metal enabled.
+`whisper-metal` feature. The workflow pins the macOS job to the Apple Silicon
+`macos-14` image, uses that image's default Xcode 15.4 toolchain, and limits
+native build parallelism because newer macOS 15/Xcode 16 runner combinations
+failed while building `whisper-rs-sys v0.15.0` with Metal enabled. CI also sets
+`WHISPER_DONT_GENERATE_BINDINGS=1` for every platform so `whisper-rs-sys` uses
+its bundled bindings instead of invoking `bindgen` on runner-local headers.
 
 ## Built platforms
 
-- macOS Apple Silicon (`macos-15`, `aarch64-apple-darwin`)
+- macOS Apple Silicon (`macos-14`, `aarch64-apple-darwin`)
 - Linux x64 (`ubuntu-22.04`)
 - Linux arm64 (`ubuntu-22.04-arm`)
 - Windows x64 (`windows-latest`)

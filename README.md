@@ -1,53 +1,54 @@
 # Echo
 
-Dictée vocale **100 % locale** : maintenez un raccourci clavier, parlez, le texte
-s'écrit dans l'input de l'application active. Une petite bulle animée s'affiche
-en bas de l'écran pendant que vous parlez.
+Fully local **voice dictation**: hold a keyboard shortcut, speak, and text is
+typed into the active application's focused input. A small animated bubble
+appears at the bottom of the screen while you speak.
 
-- **Tauri 2 + Svelte 5 + Deno** — fonctionne sur macOS, Windows et Linux.
-- **Modèles locaux interchangeables**, un par usage : **Parakeet TDT 0.6B v3**
-  (recommandé — ONNX, ~25× temps réel en CPU, 25 langues), **Whisper Large v3
-  Turbo** (précision max, ~100 langues, GPU/Metal) et **Whisper Small** (léger,
-  machines modestes). Téléchargement et changement depuis les réglages.
-- **Multilingue** : détection automatique de la langue ou langue forcée.
+- **Tauri 2 + Svelte 5 + Deno** on macOS, Windows, and Linux.
+- **Swappable local models** depending on the use case: **Parakeet TDT 0.6B v3**
+  (recommended, ONNX, ~25x real-time on CPU, 25 languages), **Whisper Large v3
+  Turbo** (maximum accuracy, ~100 languages, GPU/Metal), and **Whisper Small**
+  (lighter, better for modest machines). Models can be downloaded and switched
+  from the settings window.
+- **Multilingual** with automatic language detection or a forced language.
 
-## Fonctionnement
+## How it works
 
-1. Maintenez le raccourci (par défaut **Ctrl+Alt+Space** sur macOS/Linux,
-   **Ctrl+Shift+Space** sur Windows).
-2. La bulle apparaît en bas au centre et s'anime avec votre voix ; la
-   transcription partielle s'y affiche en direct.
-3. Le texte est tapé **en direct** dans le champ focalisé (mode « En direct »),
-   puis réconcilié au relâchement avec la transcription finale. Le mode
-   « À la fin » tape tout d'un bloc au relâchement.
+1. Hold the shortcut key combination: by default **Ctrl+Alt+Space** on
+   macOS/Linux and **Ctrl+Shift+Space** on Windows.
+2. The bubble appears at the bottom center of the screen, animates with your
+   voice, and shows the partial transcription live.
+3. Text is typed **live** into the focused field in live mode, then reconciled
+   on key release with the final transcription. In end mode, everything is
+   typed at once when you release the shortcut.
 
-## Développement
+## Development
 
 ```bash
-deno install          # dépendances frontend
-deno task tauri dev   # lance l'app (compile le backend Rust)
+deno install          # frontend dependencies
+deno task tauri dev   # run the app (builds the Rust backend)
 ```
 
-Build de production : `deno task tauri build`.
+Production build: `deno task tauri build`.
 
 ## Permissions
 
-- **macOS** : autoriser le **micro** (demandé au premier enregistrement) et
-  l'**Accessibilité** (Réglages Système → Confidentialité → Accessibilité),
-  nécessaire pour taper le texte dans les autres apps. L'app vous le propose.
-- **Linux** : la frappe simulée requiert `libxdo` (X11). Sous Wayland, le
-  support dépend du compositeur.
-- **Windows** : aucune permission particulière.
+- **macOS**: allow **Microphone** access when first prompted, and grant
+  **Accessibility** access in System Settings -> Privacy & Security ->
+  Accessibility. This is required to type text into other applications.
+- **Linux**: simulated typing requires `libxdo` on X11. On Wayland, support
+  depends on the compositor.
+- **Windows**: no special permission is required.
 
 ## Notes
 
-- Les modèles sont stockés dans le dossier de données de l'app
-  (`~/Library/Application Support/com.leomartin.echo/models` sur macOS).
-- Si votre raccourci contient un modificateur (Cmd/Ctrl/Alt/Shift), préférez le
-  mode d'insertion « À la fin » : taper du texte pendant que le modificateur est
-  physiquement enfoncé peut déclencher des raccourcis dans l'app cible.
-- Whisper ne « streame » pas nativement : les partiels sont décodés sur une
-  fenêtre glissante (~8 s max) toutes les ~1 s ; aux pauses de parole, le texte
-  décodé est « engagé » et la fenêtre repart, ce qui garde une latence
-  constante même sur les longues dictées. Seule la partie stable entre deux
-  décodages est tapée en direct, le décodage final corrige la fin.
+- Models are stored in the app data directory
+  (`~/Library/Application Support/com.leomartin.echo/models` on macOS).
+- If your shortcut includes a modifier key (Cmd/Ctrl/Alt/Shift), prefer the
+  end insertion mode: typing while the modifier is still physically held down
+  can trigger shortcuts in the target application.
+- Whisper does not stream natively. Partial results are decoded from a sliding
+  window of up to about 8 seconds roughly every second. When you pause speaking,
+  the decoded text is committed and the window restarts, which keeps latency
+  stable even during long dictation sessions. Only the stable part between two
+  decodes is typed live, and the final decode fixes the tail end.

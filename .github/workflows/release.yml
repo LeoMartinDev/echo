@@ -118,7 +118,9 @@ jobs:
             );
           '
 
-      - uses: tauri-apps/tauri-action@v1
+      # Tauri v2 docs currently reference the v0 action line; pin the latest
+      # published v0 tag because the repository does not expose a v1 tag.
+      - uses: tauri-apps/tauri-action@v0.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}

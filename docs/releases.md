@@ -1,58 +1,62 @@
-# Releases et mises a jour automatiques
+# Releases and Automatic Updates
 
-Le workflow GitHub Actions `.github/workflows/release.yml` publie une release a
-chaque push sur `main` ou `master`, ainsi qu'en lancement manuel.
+The GitHub Actions workflow `.github/workflows/release.yml` publishes a release
+on every push to `main` or `master`, and it can also be run manually.
 
-## Plateformes construites
+The workflow uses `tauri-apps/tauri-action@v0.6.2`. This is intentional: the
+current Tauri v2 documentation shows the action line as `@v0`, and the
+`tauri-apps/tauri-action` repository publishes `v0`, `v0.6`, and `v0.6.2`
+tags, not `v1`.
+
+## Built platforms
 
 - macOS Apple Silicon (`aarch64-apple-darwin`)
 - Linux x64 (`ubuntu-22.04`)
 - Linux arm64 (`ubuntu-22.04-arm`)
 - Windows x64 (`windows-latest`)
 
-macOS Intel est volontairement exclu.
+macOS Intel is intentionally excluded.
 
-## Secrets GitHub requis
+## Required GitHub secrets
 
-Generer une paire de cles updater Tauri :
+Generate a Tauri updater key pair:
 
 ```bash
 deno task tauri signer generate -w ~/.tauri/echo.key
 ```
 
-Ajouter ensuite ces secrets dans GitHub:
+Then add these secrets in GitHub:
 
-- `TAURI_SIGNING_PRIVATE_KEY`: contenu de la cle privee generee
-- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: mot de passe de la cle, ou vide si aucun
-- `TAURI_UPDATER_PUBLIC_KEY`: cle publique affichee par la commande
+- `TAURI_SIGNING_PRIVATE_KEY`: the generated private key contents
+- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: the key password, or empty if none
+- `TAURI_UPDATER_PUBLIC_KEY`: the public key printed by the command
 
-La cle publique est injectee dans `tauri.conf.json` uniquement pendant le build
-CI. La cle privee sert a signer les bundles updater et ne doit jamais etre
-versionnee.
+The public key is injected into `tauri.conf.json` only during CI builds. The
+private key signs updater bundles and must never be committed.
 
-## Versioning date
+## Date-based versioning
 
-Pour permettre une vraie nouvelle release a chaque push, la CI calcule une seule
-version UTC SemVer-compatible au debut du workflow, puis tous les builds de la
-matrix reutilisent cette meme version:
+To ensure a real new release on every push, CI computes one SemVer-compatible
+UTC version at the start of the workflow, and every matrix build reuses that
+same version:
 
 ```text
 YYYY.M.DDHHMMSS
 ```
 
-Par exemple, un build du 13 juin 2026 a 09:45:30 UTC produit
+For example, a build created on June 13, 2026 at 09:45:30 UTC becomes
 `2026.6.13094530`.
 
-L'updater Tauri compare ces versions SemVer. Sans increment de version, une app
-deja installee ne verrait pas de mise a jour.
+The Tauri updater compares these as SemVer versions. Without a version bump, an
+installed app would not detect an update.
 
-## Fonctionnement updater
+## Updater behavior
 
-En build release, l'app verifie au demarrage:
+In release builds, the app checks this endpoint at startup:
 
 ```text
 https://github.com/LeoMartinDev/echo/releases/latest/download/latest.json
 ```
 
-Si une version plus recente existe, elle est telechargee, installee, puis l'app
-redemarre automatiquement.
+If a newer version exists, it is downloaded, installed, and the app restarts
+automatically.

@@ -12,16 +12,25 @@ The macOS release build keeps Whisper Metal enabled through the
 `whisper-metal` feature. The workflow pins the macOS job to the Apple Silicon
 `macos-14` image, uses that image's default Xcode 15.4 toolchain, and limits
 native build parallelism because newer macOS 15/Xcode 16 runner combinations
-failed while building `whisper-rs-sys v0.15.0` with Metal enabled. CI also sets
-`WHISPER_DONT_GENERATE_BINDINGS=1` for every platform so `whisper-rs-sys` uses
-its bundled bindings instead of invoking `bindgen` on runner-local headers.
+failed while building `whisper-rs-sys v0.15.0` with Metal enabled. The macOS
+job also sets `MACOSX_DEPLOYMENT_TARGET=10.15` and
+`CMAKE_OSX_DEPLOYMENT_TARGET=10.15` because the bundled `whisper.cpp` sources
+use C++ `std::filesystem`, which is unavailable below macOS 10.15.
+
+Linux release jobs run on Ubuntu 24.04 so the runner glibc and libstdc++ match
+the prebuilt ONNX Runtime binaries downloaded by `ort-sys v2.0.0-rc.12`.
+
+CI sets `WHISPER_DONT_GENERATE_BINDINGS=1` only on Linux and macOS so
+`whisper-rs-sys` can use its bundled bindings there. Windows must generate
+bindings with `bindgen`; the bundled bindings contain non-MSVC layouts and fail
+to compile on the Windows runner.
 
 ## Built platforms
 
 - macOS Apple Silicon (`macos-14`, `aarch64-apple-darwin`)
-- Linux x64 (`ubuntu-22.04`)
-- Linux arm64 (`ubuntu-22.04-arm`)
-- Windows x64 (`windows-latest`)
+- Linux x64 (`ubuntu-24.04`)
+- Linux arm64 (`ubuntu-24.04-arm`)
+- Windows x64 (`windows-2025`)
 
 macOS Intel is intentionally excluded.
 

@@ -111,7 +111,7 @@ fn worker(app: AppHandle, generation: u32) {
     };
     let live = insertion_mode == InsertionMode::Live;
 
-    let vad = SmoothedVad::new(Box::new(EnergyVad::new(480, 0.012)), 5, 5, 2);
+    let vad = SmoothedVad::new(Box::new(EnergyVad::new(480, 0.012)), 5, 15, 2);
     let vad_config = VadChunkedConfig {
         min_chunk_secs: 0.3,
         max_chunk_secs: 8.0,

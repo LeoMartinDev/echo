@@ -4,7 +4,7 @@ Fully local **voice dictation**: hold a keyboard shortcut, speak, and text is
 typed into the active application's focused input. A small animated bubble
 appears at the bottom of the screen while you speak.
 
-<img width="1480" height="2192" alt="Echo" src="https://github.com/user-attachments/assets/2e09227f-adfa-428d-9ed1-5925663be1ee" />
+<img width="962" height="1425" alt="Echo" src="https://github.com/user-attachments/assets/2e09227f-adfa-428d-9ed1-5925663be1ee" />
 
 
 - **Tauri 2 + Svelte 5 + Deno** on macOS, Windows, and Linux.

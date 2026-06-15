@@ -75,6 +75,11 @@ const en = {
   today: "today",
   yesterday: "yesterday",
 
+  // — update —
+  update_available:
+    "Version {version} is available",
+  update_restart: "restart",
+
   // — overlay —
   overlay_no_field:
     "No text field detected — the text will be copied to the clipboard",
@@ -168,6 +173,10 @@ const fr: Dict = {
   delete_entry: "Supprimer cette transcription",
   today: "aujourd'hui",
   yesterday: "hier",
+
+  update_available:
+    "La version {version} est disponible",
+  update_restart: "redémarrer",
 
   overlay_no_field:
     "Aucun champ texte détecté — le texte sera copié dans le presse-papiers",

@@ -62,6 +62,7 @@ export const clearHistory = () => invoke<void>("clear_history");
 export const deleteHistoryEntry = (tsMs: number) =>
   invoke<void>("delete_history_entry", { tsMs });
 export const getProcessMemory = () => invoke<number>("get_process_memory");
+export const installUpdate = () => invoke<void>("install_update");
 
 // Labels are resolved at render time via i18n (using `key`), to follow the
 // current interface language.

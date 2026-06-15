@@ -99,6 +99,8 @@ export function installDevMockIfNeeded() {
           return false; // affiche le bandeau pour vérifier son design
         case "set_hotkey_capture":
           return;
+        case "install_update":
+          return;
         case "plugin:event|listen":
         case "plugin:event|unlisten":
           return 0;

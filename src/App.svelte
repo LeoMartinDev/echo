@@ -11,6 +11,7 @@
     getHistory,
     getProcessMemory,
     getSettings,
+    installUpdate,
     listModels,
     LANGUAGES,
     setHotkeyCapture,
@@ -41,6 +42,7 @@
   let errorMsg = $state<string | null>(null);
   let capturingHotkey = $state(false);
   let accessibilityOk = $state(true);
+  let updateVersion = $state<string | null>(null);
   const isMac = navigator.userAgent.includes("Mac");
 
   // UI language tracks the setting (or the system locale if unset).
@@ -56,6 +58,11 @@
     refresh();
     getHistory().then((h) => (history = h));
     if (isMac) accessibilityStatus(false).then((ok) => (accessibilityOk = ok));
+
+    // Affiche le bandeau de mise à jour en dev
+    if (import.meta.env.DEV) {
+      setTimeout(() => (updateVersion = "0.2.0-test"), 2000);
+    }
 
     const unsubs: Array<() => void> = [];
     listen("echo://history", async () => {
@@ -91,6 +98,10 @@
           [id]: { pct: total ? Math.round((received / total) * 100) : null, status },
         };
       }
+    }).then((u) => unsubs.push(u));
+
+    listen<string>("echo://update-ready", (e) => {
+      updateVersion = e.payload;
     }).then((u) => unsubs.push(u));
 
     return () => unsubs.forEach((u) => u());
@@ -377,6 +388,13 @@
           accessibilityOk = await accessibilityStatus(false);
         }}>{t("authorize")}</button
       >
+    </div>
+  {/if}
+
+  {#if updateVersion}
+    <div class="notice update">
+      <span>{t("update_available", { version: updateVersion })}</span>
+      <button class="btn primary" onclick={() => installUpdate()}>{t("update_restart")}</button>
     </div>
   {/if}
 

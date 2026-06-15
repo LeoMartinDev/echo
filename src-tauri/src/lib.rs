@@ -13,7 +13,7 @@ use settings::AppSettings;
 use state::AppState;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{TrayIconBuilder, TrayIconEvent};
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 use tauri_plugin_updater::UpdaterExt;
 
@@ -334,7 +334,15 @@ async fn update(app: AppHandle) -> tauri_plugin_updater::Result<()> {
         return Ok(());
     };
 
+    let version = update.version.clone();
     update.download_and_install(|_, _| {}, || {}).await?;
+
+    let _ = app.emit("echo://update-ready", version);
+    Ok(())
+}
+
+#[tauri::command]
+fn install_update(app: AppHandle) {
     app.restart()
 }
 
@@ -361,6 +369,7 @@ pub fn run() {
             get_process_memory,
             accessibility_status,
             set_hotkey_capture,
+            install_update,
         ])
         .setup(|app| {
             // macOS: "agent" app — menu bar icon only, no Dock or Cmd+Tab,

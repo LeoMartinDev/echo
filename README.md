@@ -27,6 +27,38 @@ appears at the bottom of the screen while you speak.
    on key release with the final transcription. In end mode, everything is
    typed at once when you release the shortcut.
 
+## Installation
+
+Download the latest build for your operating system from the
+[latest GitHub release](https://github.com/LeoMartinDev/echo/releases/latest).
+
+| System | Download | Install |
+| --- | --- | --- |
+| Windows | Download the Windows installer from the [latest release](https://github.com/LeoMartinDev/echo/releases/latest). | Run the installer and follow the prompts. |
+| macOS | Download the macOS `.dmg` or `.app` archive from the [latest release](https://github.com/LeoMartinDev/echo/releases/latest). | Drag Echo to `Applications`, then remove the quarantine attribute if macOS blocks the app because it is not Apple-signed. |
+| Linux | Download the Linux package from the [latest release](https://github.com/LeoMartinDev/echo/releases/latest). | Use the `.AppImage`, `.deb`, or `.rpm` package that matches your distribution. |
+
+### macOS unsigned app note
+
+Echo is not currently signed with an Apple Developer ID. If macOS says the app
+is damaged, cannot be opened, or is from an unidentified developer, install it
+in `Applications` and run:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Echo.app
+```
+
+Then open Echo again. You will still need to grant the permissions listed below.
+
+### Linux AppImage
+
+If you downloaded the AppImage, make it executable before launching it:
+
+```bash
+chmod +x Echo*.AppImage
+./Echo*.AppImage
+```
+
 ## Development
 
 ```bash

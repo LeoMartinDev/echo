@@ -50,8 +50,18 @@
     setLocale(resolveLocale(settings?.ui_language));
   });
 
+  const RETRY_DELAYS = [500, 1000, 1500];
+
   async function refresh() {
-    [settings, models] = await Promise.all([getSettings(), listModels()]);
+    for (let i = 0; i <= RETRY_DELAYS.length; i++) {
+      try {
+        [settings, models] = await Promise.all([getSettings(), listModels()]);
+        return;
+      } catch (e) {
+        if (i === RETRY_DELAYS.length) { errorMsg = String(e); return; }
+        await new Promise((r) => setTimeout(r, RETRY_DELAYS[i]));
+      }
+    }
   }
 
   onMount(() => {

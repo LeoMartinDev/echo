@@ -324,8 +324,8 @@
 
 <svelte:window onkeydown={onHotkeyKeydown} onblur={endCapture} />
 
-<main>
-  <header class="reveal" style="--d: 0">
+<header class="reveal" style="--d: 0">
+  <div class="header-inner">
     <div class="brand">
       <svg class="mark" viewBox="0 0 16 16" aria-hidden="true">
         <!-- graft glyph: stem + insertion -->
@@ -373,8 +373,10 @@
         </span>
       {/if}
     </p>
-  </header>
+  </div>
+</header>
 
+<main>
   <p class="lede reveal" style="--d: 1">
     {t("lede_pre")} <kbd>{settings?.hotkey ?? "…"}</kbd> {t("lede_post")}
   </p>
@@ -701,6 +703,7 @@
   :global(html) {
     background: var(--bg);
     color-scheme: dark;
+    scrollbar-gutter: stable;
   }
 
   :global(body) {
@@ -718,9 +721,9 @@
   }
 
   main {
-    max-width: 620px;
+    max-width: 448px;
     margin: 0 auto;
-    padding: 36px 32px 56px;
+    padding: 52px 32px 56px;
   }
 
   /* — entrance animation on load, subtle and one-shot — */
@@ -749,6 +752,19 @@
   /* ————— header ————— */
 
   header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-inner {
+    max-width: 448px;
+    margin: 0 auto;
+    padding: 10px 32px;
     display: flex;
     align-items: baseline;
     justify-content: space-between;

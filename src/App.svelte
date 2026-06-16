@@ -419,9 +419,7 @@
     </button>
   </nav>
 
-  {#if !settings}
-    <p class="mono loading">{t("loading")}</p>
-  {:else if view === "settings"}
+  {#if view === "settings" && settings}
     <section class="reveal hero-section" style="--d: 3">
       <button
         type="button"
@@ -605,7 +603,7 @@
         {/each}
       </ul>
     </section>
-  {:else}
+  {:else if settings}
     <section class="reveal" style="--d: 3">
       <div class="row">
         <div class="row-label">
@@ -1268,10 +1266,6 @@
     margin-top: 6px;
     color: var(--fg-faint);
     font-variant-numeric: tabular-nums;
-  }
-
-  .loading {
-    color: var(--fg-faint);
   }
 
   /* ————— tabs ————— */

@@ -59,8 +59,7 @@ export const setHotkeyCapture = (capturing: boolean) =>
   invoke<void>("set_hotkey_capture", { capturing });
 export const getHistory = () => invoke<HistoryEntry[]>("get_history");
 export const clearHistory = () => invoke<void>("clear_history");
-export const deleteHistoryEntry = (tsMs: number) =>
-  invoke<void>("delete_history_entry", { tsMs });
+export const deleteHistoryEntry = (tsMs: number) => invoke<void>("delete_history_entry", { tsMs });
 export const getProcessMemory = () => invoke<number>("get_process_memory");
 export const installUpdate = () => invoke<void>("install_update");
 

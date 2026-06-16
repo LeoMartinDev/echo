@@ -1,3 +1,4 @@
+import "./app.css";
 import { mount } from "svelte";
 import Overlay from "./Overlay.svelte";
 

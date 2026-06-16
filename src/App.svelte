@@ -324,10 +324,10 @@
 
 <svelte:window onkeydown={onHotkeyKeydown} onblur={endCapture} />
 
-<header class="reveal" style="--d: 0">
-  <div class="header-inner">
-    <div class="brand">
-      <svg class="mark" viewBox="0 0 16 16" aria-hidden="true">
+<header class="fixed top-0 left-0 right-0 z-100 bg-bg border-b border-border animate-[rise_0.45s_cubic-bezier(0.2,0.7,0.2,1)_both]" style="animation-delay: calc(var(--d) * 55ms); --d: 0">
+  <div class="max-w-[448px] mx-auto py-2.5 px-6 flex items-baseline justify-between gap-4">
+    <div class="flex items-baseline gap-2">
+      <svg class="w-[15px] h-[15px] text-accent translate-y-0.5" viewBox="0 0 16 16" aria-hidden="true">
         <!-- graft glyph: stem + insertion -->
         <path
           d="M8 14V7M8 7C8 4.5 9.5 3 12 3C12 5.5 10.5 7 8 7ZM8 10C8 8 6.8 6.8 4.5 6.8C4.5 9 5.8 10 8 10Z"
@@ -338,20 +338,20 @@
           stroke-linejoin="round"
         />
       </svg>
-      <h1>echo</h1>
-      <span class="version">0.1.0</span>
+      <h1 class="m-0 font-mono text-base font-semibold tracking-[-0.01em]">echo</h1>
+      <span class="font-mono text-[10.5px] text-fg-faint">0.1.0</span>
     </div>
-    <p class="status">
+    <p class="m-0 flex items-center gap-[7px] text-fg-muted">
       {#if activeModel}
-        <span class="dot ok"></span>
-        <span class="mono">{activeModel.name.toLowerCase()}</span>
+        <span class="w-1.5 h-1.5 rounded-full shrink-0 bg-accent shadow-[0_0_6px_rgba(122,162,247,0.55)]"></span>
+        <span class="font-mono text-[11px] tracking-[0.02em]">{activeModel.name.toLowerCase()}</span>
       {:else}
-        <span class="dot warn"></span>
-        <span class="mono">{t("no_model")}</span>
+        <span class="w-1.5 h-1.5 rounded-full shrink-0 bg-[#c9a35a]"></span>
+        <span class="font-mono text-[11px] tracking-[0.02em]">{t("no_model")}</span>
       {/if}
       {#if memBytes !== null}
-        <span class="mono ram">
-          <svg class="ram-icon" viewBox="0 0 16 16" aria-hidden="true">
+        <span class="font-mono text-[11px] tracking-[0.02em] inline-flex items-center gap-1 text-fg-faint tabular-nums">
+          <svg class="w-[11px] h-[11px]" viewBox="0 0 16 16" aria-hidden="true">
             <rect
               x="3.25"
               y="4.75"
@@ -376,25 +376,25 @@
   </div>
 </header>
 
-<main>
-  <p class="lede reveal" style="--d: 1">
-    {t("lede_pre")} <kbd>{settings?.hotkey ?? "…"}</kbd> {t("lede_post")}
+<main class="max-w-[448px] mx-auto pt-[52px] px-6 pb-14">
+  <p class="my-[14px] mb-[30px] text-fg-muted max-w-[46ch] animate-[rise_0.45s_cubic-bezier(0.2,0.7,0.2,1)_both]" style="animation-delay: calc(var(--d) * 55ms); --d: 1">
+    {t("lede_pre")} <kbd class="font-mono text-[11px] tracking-[0.02em] px-[7px] py-[1.5px] pb-[2.5px] rounded border border-border-strong border-b-2 bg-bg-raised text-fg whitespace-nowrap">{settings?.hotkey ?? "…"}</kbd> {t("lede_post")}
   </p>
 
   {#if errorMsg}
-    <div class="notice error" role="alert">
+    <div class="flex items-center justify-between gap-[14px] px-[14px] py-2.5 mb-[18px] border border-border border-l-2 border-l-danger rounded-md bg-bg-raised text-fg" role="alert">
       <span>{errorMsg}</span>
-      <button class="dismiss" onclick={() => (errorMsg = null)} aria-label={t("close")}>✕</button>
+      <button class="bg-transparent border-none text-fg-faint cursor-pointer text-[11px] p-1 hover:text-fg" onclick={() => (errorMsg = null)} aria-label={t("close")}>✕</button>
     </div>
   {/if}
 
   {#if isMac && !accessibilityOk}
-    <div class="notice">
+    <div class="flex items-center justify-between gap-[14px] px-[14px] py-2.5 mb-[18px] border border-border border-l-2 border-l-accent rounded-md bg-bg-raised text-fg-muted">
       <span>
-        {t("a11y_before")} <strong>{t("a11y_perm")}</strong> {t("a11y_after")}
+        {t("a11y_before")} <strong class="text-fg font-semibold">{t("a11y_perm")}</strong> {t("a11y_after")}
       </span>
       <button
-        class="btn"
+        class="font-mono text-[11px] tracking-[0.02em] px-3 py-[5px] rounded-[5px] border border-border-strong bg-transparent text-fg cursor-pointer transition-[background,border-color] duration-120 ease-[ease] hover:bg-bg-hover hover:border-white/24 focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1"
         onclick={async () => {
           await accessibilityStatus(true);
           accessibilityOk = await accessibilityStatus(false);
@@ -404,65 +404,69 @@
   {/if}
 
   {#if updateVersion}
-    <div class="notice update">
+    <div class="flex items-center justify-between gap-[14px] px-[14px] py-2.5 mb-[18px] border border-border border-l-2 border-l-accent rounded-md bg-bg-raised text-fg-muted">
       <span>{t("update_available", { version: updateVersion })}</span>
-      <button class="btn primary" onclick={() => installUpdate()}>{t("update_restart")}</button>
+      <button class="font-mono text-[11px] tracking-[0.02em] px-3 py-[5px] rounded-[5px] border border-accent/50 bg-transparent text-accent cursor-pointer transition-[background,border-color] duration-120 ease-[ease] hover:bg-accent-dim focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1" onclick={() => installUpdate()}>{t("update_restart")}</button>
     </div>
   {/if}
 
-  <nav class="tabs reveal" style="--d: 2">
-    <button class="tab" class:on={view === "settings"} onclick={() => (view = "settings")}>
+  <nav class="flex gap-5 mt-[22px] border-b border-border animate-[rise_0.45s_cubic-bezier(0.2,0.7,0.2,1)_both]" style="animation-delay: calc(var(--d) * 55ms); --d: 2">
+    <button
+      class="font-mono text-[11px] tracking-[0.04em] px-px pt-[7px] pb-[9px] bg-transparent border-none border-b -mb-px cursor-pointer transition-[color] duration-120 ease-[ease] {view === 'settings' ? 'text-fg border-b-fg' : 'border-b-transparent text-fg-faint hover:text-fg-muted'}"
+      onclick={() => (view = "settings")}
+    >
       {t("tab_settings")}
     </button>
-    <button class="tab" class:on={view === "history"} onclick={() => (view = "history")}>
-      {t("tab_history")}{#if history.length > 0}<span class="count">{history.length}</span>{/if}
+    <button
+      class="font-mono text-[11px] tracking-[0.04em] px-px pt-[7px] pb-[9px] bg-transparent border-none border-b -mb-px cursor-pointer transition-[color] duration-120 ease-[ease] {view === 'history' ? 'text-fg border-b-fg' : 'border-b-transparent text-fg-faint hover:text-fg-muted'}"
+      onclick={() => (view = "history")}
+    >
+      {t("tab_history")}{#if history.length > 0}<span class="ml-[6px] text-fg-faint tabular-nums">{history.length}</span>{/if}
     </button>
   </nav>
 
   {#if view === "settings" && settings}
-    <section class="reveal hero-section" style="--d: 3">
+    <section class="mt-[30px] animate-[rise_0.45s_cubic-bezier(0.2,0.7,0.2,1)_both]" style="animation-delay: calc(var(--d) * 55ms); --d: 3">
       <button
         type="button"
-        class="hotkey-hero"
-        class:capturing={capturingHotkey}
+        class="relative flex flex-col items-center gap-[18px] w-full px-6 pt-[34px] pb-[26px] border rounded-xl bg-bg-raised cursor-pointer transition-[border-color,background] duration-150 ease-[ease] {capturingHotkey ? 'border-accent bg-accent-dim' : 'border-border hover:border-border-strong hover:bg-bg-hover'} focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-2"
         onclick={() => (capturingHotkey ? endCapture() : startCapture())}
         aria-label={t("ptt_label")}
       >
         {#if !capturingHotkey}
-          <span class="hero-edit">{t("ptt_change")}</span>
+          <span class="absolute top-3 right-[14px] font-mono text-[10px] tracking-[0.04em] text-fg-faint opacity-0 transition-opacity duration-150 ease-[ease] group-hover:opacity-100">{t("ptt_change")}</span>
         {/if}
-        <div class="hero-keys">
+        <div class="flex items-center gap-[10px] min-h-14">
           {#if capturingHotkey}
-            <span class="recording-dot big"></span>
-            <span class="hero-prompt">{t("press_key")}</span>
+            <span class="w-[9px] h-[9px] rounded-full bg-accent animate-[blink_1s_ease-in-out_infinite]"></span>
+            <span class="font-mono text-[19px] tracking-[0.01em] text-accent">{t("press_key")}</span>
           {:else}
             {#each settings.hotkey.split("+") as part, i}
-              {#if i > 0}<span class="hero-plus">+</span>{/if}
-              <kbd class="hero-kbd">{part}</kbd>
+              {#if i > 0}<span class="font-mono text-[17px] text-fg-faint">+</span>{/if}
+              <kbd class="font-mono text-[26px] font-medium px-[18px] py-[9px] pb-3 rounded-[10px] border border-border-strong border-b-[3px] bg-bg text-fg leading-none whitespace-nowrap">{part}</kbd>
             {/each}
           {/if}
         </div>
-        <div class="hero-meta">
-          <span class="hero-title">{t("ptt_label")}</span>
-          <span class="hero-hint">{t("ptt_hint")}</span>
+        <div class="flex flex-col items-center gap-[3px]">
+          <span class="text-[13px] font-semibold text-fg">{t("ptt_label")}</span>
+          <span class="text-[11.5px] text-fg-faint">{t("ptt_hint")}</span>
         </div>
       </button>
     </section>
 
-    <section class="reveal" style="--d: 4">
-      <h2>{t("sec_insertion")}</h2>
-      <div class="row">
-        <div class="row-label">
+    <section class="mt-[34px] animate-[rise_0.45s_cubic-bezier(0.2,0.7,0.2,1)_both]" style="animation-delay: calc(var(--d) * 55ms); --d: 4">
+      <h2 class="font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-fg-faint m-0 mb-1 pb-2 border-b border-border">{t("sec_insertion")}</h2>
+      <div class="flex items-center justify-between gap-6 py-[14px] border-b border-border">
+        <div class="flex flex-col gap-0.5 text-fg">
           {t("write_mode")}
-          <span class="row-hint">
+          <span class="text-[11.5px] text-fg-faint">
             {t("write_mode_hint")}
           </span>
         </div>
-        <div class="row-control">
-          <div class="segmented" role="radiogroup" aria-label={t("write_mode")}>
+        <div class="shrink-0">
+          <div class="inline-flex border border-border-strong rounded-[5px] overflow-hidden" role="radiogroup" aria-label={t("write_mode")}>
             <button
-              class="seg"
-              class:on={settings.insertion_mode === "live"}
+              class="font-mono text-[11px] px-3 py-[5px] cursor-pointer transition-[background] duration-120 ease-[ease] border-r border-border hover:bg-bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1 {settings.insertion_mode === 'live' ? 'bg-accent-dim text-accent' : 'text-fg-muted'}"
               onclick={() => save({ insertion_mode: "live" })}
               role="radio"
               aria-checked={settings.insertion_mode === "live"}
@@ -470,8 +474,7 @@
               {t("mode_live")}
             </button>
             <button
-              class="seg"
-              class:on={settings.insertion_mode === "on_release"}
+              class="font-mono text-[11px] px-3 py-[5px] cursor-pointer transition-[background] duration-120 ease-[ease] hover:bg-bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1 {settings.insertion_mode === 'on_release' ? 'bg-accent-dim text-accent' : 'text-fg-muted'}"
               onclick={() => save({ insertion_mode: "on_release" })}
               role="radio"
               aria-checked={settings.insertion_mode === "on_release"}
@@ -481,53 +484,56 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="row-label">
+      <div class="flex items-center justify-between gap-6 py-[14px] border-b border-border">
+        <div class="flex flex-col gap-0.5 text-fg">
           {t("lang_label")}
-          <span class="row-hint">{t("lang_hint")}</span>
+          <span class="text-[11.5px] text-fg-faint">{t("lang_hint")}</span>
         </div>
-        <div class="row-control">
+        <div class="shrink-0">
           <select
             value={settings.language ?? ""}
             onchange={(e) => save({ language: e.currentTarget.value || null })}
+            class="font-mono text-[11px] pr-[28px] pl-[10px] py-[5px] rounded-[5px] border border-border-strong bg-bg text-fg appearance-none cursor-pointer hover:bg-bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1"
+            style="background-image: url(&quot;data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%2397978f' fill='none'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 9px center"
           >
             {#each LANGUAGES as lang}
-              <option value={lang.code ?? ""}>{t(lang.key)}</option>
+              <option value={lang.code ?? ""} class="text-fg bg-bg-raised">{t(lang.key)}</option>
             {/each}
           </select>
         </div>
       </div>
     </section>
 
-    <section class="reveal" style="--d: 5">
-      <h2>{t("sec_system")}</h2>
-      <div class="row">
-        <div class="row-label">
+    <section class="mt-[34px] animate-[rise_0.45s_cubic-bezier(0.2,0.7,0.2,1)_both]" style="animation-delay: calc(var(--d) * 55ms); --d: 5">
+      <h2 class="font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-fg-faint m-0 mb-1 pb-2 border-b border-border">{t("sec_system")}</h2>
+      <div class="flex items-center justify-between gap-6 py-[14px] border-b border-border">
+        <div class="flex flex-col gap-0.5 text-fg">
           {t("ui_lang_label")}
-          <span class="row-hint">{t("ui_lang_hint")}</span>
+          <span class="text-[11.5px] text-fg-faint">{t("ui_lang_hint")}</span>
         </div>
-        <div class="row-control">
+        <div class="shrink-0">
           <select
             value={settings.ui_language ?? ""}
             onchange={(e) => save({ ui_language: e.currentTarget.value || null })}
+            class="font-mono text-[11px] pr-[28px] pl-[10px] py-[5px] rounded-[5px] border border-border-strong bg-bg text-fg appearance-none cursor-pointer hover:bg-bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1"
+            style="background-image: url(&quot;data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%2397978f' fill='none'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 9px center"
           >
-            <option value="">{t("ui_lang_auto")}</option>
+            <option value="" class="text-fg bg-bg-raised">{t("ui_lang_auto")}</option>
             {#each SUPPORTED as code}
-              <option value={code}>{t(("lang_" + code) as TKey)}</option>
+              <option value={code} class="text-fg bg-bg-raised">{t(("lang_" + code) as TKey)}</option>
             {/each}
           </select>
         </div>
       </div>
-      <div class="row">
-        <div class="row-label">
+      <div class="flex items-center justify-between gap-6 py-[14px] border-b border-border">
+        <div class="flex flex-col gap-0.5 text-fg">
           {t("autostart_label")}
-          <span class="row-hint">{t("autostart_hint")}</span>
+          <span class="text-[11.5px] text-fg-faint">{t("autostart_hint")}</span>
         </div>
-        <div class="row-control">
-          <div class="segmented" role="radiogroup" aria-label={t("autostart_label")}>
+        <div class="shrink-0">
+          <div class="inline-flex border border-border-strong rounded-[5px] overflow-hidden" role="radiogroup" aria-label={t("autostart_label")}>
             <button
-              class="seg"
-              class:on={settings.autostart}
+              class="font-mono text-[11px] px-3 py-[5px] cursor-pointer transition-[background] duration-120 ease-[ease] border-r border-border hover:bg-bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1 {settings.autostart ? 'bg-accent-dim text-accent' : 'text-fg-muted'}"
               onclick={() => save({ autostart: true })}
               role="radio"
               aria-checked={settings.autostart}
@@ -535,8 +541,7 @@
               {t("on")}
             </button>
             <button
-              class="seg"
-              class:on={!settings.autostart}
+              class="font-mono text-[11px] px-3 py-[5px] cursor-pointer transition-[background] duration-120 ease-[ease] hover:bg-bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1 {!settings.autostart ? 'bg-accent-dim text-accent' : 'text-fg-muted'}"
               onclick={() => save({ autostart: false })}
               role="radio"
               aria-checked={!settings.autostart}
@@ -548,28 +553,27 @@
       </div>
     </section>
 
-    <section class="reveal" style="--d: 6">
-      <h2>{t("sec_models")}</h2>
-      <ul class="models">
+    <section class="mt-[34px] animate-[rise_0.45s_cubic-bezier(0.2,0.7,0.2,1)_both]" style="animation-delay: calc(var(--d) * 55ms); --d: 6">
+      <h2 class="font-mono text-[10.5px] font-medium uppercase tracking-[0.14em] text-fg-faint m-0 mb-1 pb-2 border-b border-border">{t("sec_models")}</h2>
+      <ul class="list-none m-0 p-0">
         {#each models as model (model.id)}
           {@const p = progress[model.id]}
-          <li class="model" class:active={model.active}>
-            <div class="model-main">
-              <div class="model-name">
-                {#if model.active}<span class="active-dot" title={t("model_active_title")}></span>{/if}
-                <strong>{model.name}</strong>
-                <span class="tag">{model.engine}</span>
+          <li class="flex items-start justify-between gap-[18px] px-[10px] py-[13px] -mx-[10px] border-b border-border rounded-md transition-[background] duration-120 ease-[ease] hover:bg-bg-raised">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                {#if model.active}<span class="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_6px_rgba(122,162,247,0.55)] shrink-0" title={t("model_active_title")}></span>{/if}
+                <strong class="font-semibold text-[13px]">{model.name}</strong>
+                <span class="font-mono text-[9.5px] uppercase tracking-[0.08em] text-fg-faint border border-border rounded-[3px] px-[5px] py-px">{model.engine}</span>
               </div>
-              <p class="model-desc">{modelDesc(model)}</p>
+              <p class="mt-[3px] text-xs text-fg-muted leading-[1.45]">{modelDesc(model)}</p>
               {#if p}
-                <div class="progress" aria-hidden="true">
+                <div class="mt-[10px] h-0.5 rounded-[1px] bg-border overflow-hidden" aria-hidden="true">
                   <div
-                    class="progress-bar"
-                    class:indeterminate={p.pct === null || p.status === "extracting"}
+                    class="h-full bg-accent transition-[width] duration-250 ease-[ease] {p.pct === null || p.status === 'extracting' ? 'animate-[pulse_1.1s_ease-in-out_infinite]' : ''}"
                     style="width: {p.pct ?? 100}%"
                   ></div>
                 </div>
-                <span class="mono progress-label">
+                <span class="font-mono text-[11px] tracking-[0.02em] inline-block mt-[6px] text-fg-faint tabular-nums">
                   {p.status === "extracting"
                     ? t("extracting")
                     : p.pct !== null
@@ -578,22 +582,22 @@
                 </span>
               {/if}
             </div>
-            <div class="model-side">
-              <span class="mono size">{fmtSize(model.size_mb)}</span>
+            <div class="flex items-center gap-2 shrink-0 pt-px">
+              <span class="font-mono text-[11px] tracking-[0.02em] text-fg-faint tabular-nums">{fmtSize(model.size_mb)}</span>
               {#if !p}
                 {#if model.downloaded}
                   {#if !model.active}
-                    <button class="btn primary" onclick={() => save({ model_id: model.id })}>
+                    <button class="font-mono text-[11px] tracking-[0.02em] px-3 py-[5px] rounded-[5px] border border-accent/50 bg-transparent text-accent cursor-pointer transition-[background,border-color] duration-120 ease-[ease] hover:bg-accent-dim focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1" onclick={() => save({ model_id: model.id })}>
                       {t("use_model")}
                     </button>
-                    <button class="btn danger" onclick={() => removeModel(model.id)}>
+                    <button class="font-mono text-[11px] tracking-[0.02em] px-3 py-[5px] rounded-[5px] border border-border-strong bg-transparent text-fg-faint cursor-pointer transition-[background,border-color] duration-120 ease-[ease] hover:text-danger hover:border-danger/50 hover:bg-danger/8 focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1" onclick={() => removeModel(model.id)}>
                       {t("delete_short")}
                     </button>
                   {:else}
-                    <span class="mono active-label">{t("active")}</span>
+                    <span class="font-mono text-[11px] tracking-[0.02em] text-accent">{t("active")}</span>
                   {/if}
                 {:else}
-                  <button class="btn" onclick={() => startDownload(model.id)}>
+                  <button class="font-mono text-[11px] tracking-[0.02em] px-3 py-[5px] rounded-[5px] border border-border-strong bg-transparent text-fg cursor-pointer transition-[background,border-color] duration-120 ease-[ease] hover:bg-bg-hover hover:border-white/24 focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1" onclick={() => startDownload(model.id)}>
                     {t("download")}
                   </button>
                 {/if}
@@ -604,17 +608,16 @@
       </ul>
     </section>
   {:else if settings}
-    <section class="reveal" style="--d: 3">
-      <div class="row">
-        <div class="row-label">
+    <section class="animate-[rise_0.45s_cubic-bezier(0.2,0.7,0.2,1)_both]" style="animation-delay: calc(var(--d) * 55ms); --d: 3">
+      <div class="flex items-center justify-between gap-6 py-[14px] border-b border-border">
+        <div class="flex flex-col gap-0.5 text-fg">
           {t("keep_label")}
-          <span class="row-hint">{t("keep_hint")}</span>
+          <span class="text-[11.5px] text-fg-faint">{t("keep_hint")}</span>
         </div>
-        <div class="row-control">
-          <div class="segmented" role="radiogroup" aria-label={t("keep_label")}>
+        <div class="shrink-0">
+          <div class="inline-flex border border-border-strong rounded-[5px] overflow-hidden" role="radiogroup" aria-label={t("keep_label")}>
             <button
-              class="seg"
-              class:on={settings.history_enabled}
+              class="font-mono text-[11px] px-3 py-[5px] cursor-pointer transition-[background] duration-120 ease-[ease] border-r border-border hover:bg-bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1 {settings.history_enabled ? 'bg-accent-dim text-accent' : 'text-fg-muted'}"
               onclick={() => save({ history_enabled: true })}
               role="radio"
               aria-checked={settings.history_enabled}
@@ -622,8 +625,7 @@
               {t("on")}
             </button>
             <button
-              class="seg"
-              class:on={!settings.history_enabled}
+              class="font-mono text-[11px] px-3 py-[5px] cursor-pointer transition-[background] duration-120 ease-[ease] hover:bg-bg-hover focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1 {!settings.history_enabled ? 'bg-accent-dim text-accent' : 'text-fg-muted'}"
               onclick={() => save({ history_enabled: false })}
               role="radio"
               aria-checked={!settings.history_enabled}
@@ -635,35 +637,35 @@
       </div>
 
       {#if history.length > 0}
-        <div class="history-tools">
+        <div class="flex gap-2 items-center py-[14px] pb-1">
           <input
-            class="search"
+            class="flex-1 font-mono text-[11px] tracking-[0.02em] px-[10px] py-[5px] rounded-[5px] border border-border-strong bg-transparent text-fg placeholder:text-fg-faint focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1"
             type="text"
             placeholder={t("filter_placeholder")}
             bind:value={query}
           />
-          <button class="btn danger small" onclick={wipeHistory}>{t("clear_all")}</button>
+          <button class="font-mono text-[11px] tracking-[0.02em] px-[9px] py-[2.5px] rounded-[5px] border border-border-strong bg-transparent text-fg-faint cursor-pointer transition-[background,border-color] duration-120 ease-[ease] hover:text-danger hover:border-danger/50 hover:bg-danger/8 focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1" onclick={wipeHistory}>{t("clear_all")}</button>
         </div>
       {/if}
 
       {#if filteredHistory.length === 0}
-        <p class="mono empty">
+        <p class="font-mono text-[11px] tracking-[0.02em] text-fg-faint py-3 m-0">
           {history.length === 0 ? t("empty_none") : t("empty_no_results")}
         </p>
       {:else}
         {#each groupedHistory as group (group.label)}
-          <div class="mono day">{group.label}</div>
-          <ul class="history">
+          <div class="font-mono text-[11px] tracking-[0.02em] text-fg-faint text-[10px] uppercase tracking-[0.12em] mt-[18px] mb-0.5">{group.label}</div>
+          <ul class="list-none m-0 p-0">
             {#each group.entries as entry (entry.ts_ms)}
-              <li class="entry">
-                <span class="mono when">{fmtTime(entry.ts_ms)}</span>
-                <span class="entry-text" title={entry.text}>{entry.text}</span>
-                <div class="entry-actions">
-                  <button class="btn small copy" onclick={() => copyEntry(entry)}>
+              <li class="group flex items-center gap-3 px-[10px] py-[9px] -mx-[10px] border-b border-border rounded-md hover:bg-bg-raised">
+                <span class="font-mono text-[11px] tracking-[0.02em] text-fg-faint shrink-0 tabular-nums">{fmtTime(entry.ts_ms)}</span>
+                <span class="flex-1 min-w-0 text-[12.5px] text-fg-muted truncate" title={entry.text}>{entry.text}</span>
+                <div class="shrink-0 flex gap-[6px] invisible group-hover:visible">
+                  <button class="font-mono text-[11px] tracking-[0.02em] px-[9px] py-[2.5px] rounded-[5px] border border-border-strong bg-transparent text-fg cursor-pointer transition-[background,border-color] duration-120 ease-[ease] hover:bg-bg-hover hover:border-white/24 focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1" onclick={() => copyEntry(entry)}>
                     {copiedTs === entry.ts_ms ? t("copied") : t("copy")}
                   </button>
                   <button
-                    class="btn small danger del"
+                    class="font-mono text-[11px] tracking-[0.02em] px-2 py-[2.5px] leading-none rounded-[5px] border border-border-strong bg-transparent text-fg-faint cursor-pointer transition-[background,border-color] duration-120 ease-[ease] hover:text-danger hover:border-danger/50 hover:bg-danger/8 focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent focus-visible:outline-offset-1"
                     title={t("delete_entry")}
                     aria-label={t("delete_entry")}
                     onclick={() => deleteEntry(entry)}>✕</button
@@ -677,733 +679,3 @@
     </section>
   {/if}
 </main>
-
-<style>
-  :global(:root) {
-    --bg: #0d0e10;
-    --bg-raised: #141518;
-    --bg-hover: #1a1b1f;
-    --border: rgba(255, 255, 255, 0.07);
-    --border-strong: rgba(255, 255, 255, 0.16);
-    --fg: #e6e6e3;
-    --fg-muted: #97978f;
-    --fg-faint: #5b5b55;
-    --accent: #7aa2f7;
-    --accent-dim: rgba(122, 162, 247, 0.14);
-    --danger: #cf7a6d;
-    --mono:
-      ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo,
-      monospace;
-    --sans:
-      -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
-  }
-
-  :global(html) {
-    background: var(--bg);
-    color-scheme: dark;
-    scrollbar-gutter: stable;
-  }
-
-  :global(body) {
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font-family: var(--sans);
-    font-size: 13px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  :global(::selection) {
-    background: var(--accent-dim);
-  }
-
-  main {
-    max-width: 448px;
-    margin: 0 auto;
-    padding: 52px 32px 56px;
-  }
-
-  /* — entrance animation on load, subtle and one-shot — */
-  .reveal {
-    animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-delay: calc(var(--d) * 55ms);
-  }
-
-  @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .mono {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.02em;
-  }
-
-  /* ————— header ————— */
-
-  header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .header-inner {
-    max-width: 448px;
-    margin: 0 auto;
-    padding: 10px 32px;
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .brand {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-
-  .mark {
-    width: 15px;
-    height: 15px;
-    color: var(--accent);
-    transform: translateY(2px);
-  }
-
-  h1 {
-    margin: 0;
-    font-family: var(--mono);
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-
-  .version {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    color: var(--fg-faint);
-  }
-
-  .status {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    color: var(--fg-muted);
-  }
-
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex: none;
-  }
-
-  .dot.ok {
-    background: var(--accent);
-    box-shadow: 0 0 6px rgba(122, 162, 247, 0.55);
-  }
-
-  .dot.warn {
-    background: #c9a35a;
-  }
-
-  .ram {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--fg-faint);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .ram-icon {
-    width: 11px;
-    height: 11px;
-  }
-
-  .lede {
-    margin: 14px 0 30px;
-    color: var(--fg-muted);
-    max-width: 46ch;
-  }
-
-  kbd {
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 1.5px 7px 2.5px;
-    border-radius: 4px;
-    border: 1px solid var(--border-strong);
-    border-bottom-width: 2px;
-    background: var(--bg-raised);
-    color: var(--fg);
-    white-space: nowrap;
-  }
-
-  /* ————— notices ————— */
-
-  .notice {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 10px 14px;
-    margin-bottom: 18px;
-    border: 1px solid var(--border);
-    border-left: 2px solid var(--accent);
-    border-radius: 6px;
-    background: var(--bg-raised);
-    color: var(--fg-muted);
-  }
-
-  .notice strong {
-    color: var(--fg);
-    font-weight: 600;
-  }
-
-  .notice.error {
-    border-left-color: var(--danger);
-    color: var(--fg);
-  }
-
-  .dismiss {
-    background: none;
-    border: none;
-    color: var(--fg-faint);
-    cursor: pointer;
-    font-size: 11px;
-    padding: 4px;
-  }
-
-  .dismiss:hover {
-    color: var(--fg);
-  }
-
-  /* ————— sections / rows ————— */
-
-  section {
-    margin-top: 34px;
-  }
-
-  h2 {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--fg-faint);
-    margin: 0 0 4px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .row-label {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    color: var(--fg);
-  }
-
-  .row-hint {
-    font-size: 11.5px;
-    color: var(--fg-faint);
-  }
-
-  .row-control {
-    flex: none;
-  }
-
-  /* ————— controls ————— */
-
-  .btn {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.02em;
-    padding: 5px 12px;
-    border-radius: 5px;
-    border: 1px solid var(--border-strong);
-    background: transparent;
-    color: var(--fg);
-    cursor: pointer;
-    transition:
-      background 0.12s ease,
-      border-color 0.12s ease;
-  }
-
-  .btn:hover {
-    background: var(--bg-hover);
-    border-color: rgba(255, 255, 255, 0.24);
-  }
-
-  .btn:focus-visible,
-  .seg:focus-visible,
-  select:focus-visible {
-    outline: 1px solid var(--accent);
-    outline-offset: 1px;
-  }
-
-  .btn.primary {
-    border-color: rgba(122, 162, 247, 0.5);
-    color: var(--accent);
-  }
-
-  .btn.primary:hover {
-    background: var(--accent-dim);
-  }
-
-  .btn.danger {
-    color: var(--fg-faint);
-  }
-
-  .btn.danger:hover {
-    color: var(--danger);
-    border-color: rgba(207, 122, 109, 0.5);
-    background: rgba(207, 122, 109, 0.08);
-  }
-
-  /* ————— hotkey hero ————— */
-
-  .hero-section {
-    margin-top: 30px;
-  }
-
-  .hotkey-hero {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    width: 100%;
-    padding: 34px 24px 26px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--bg-raised);
-    cursor: pointer;
-    transition:
-      border-color 0.15s ease,
-      background 0.15s ease;
-  }
-
-  .hotkey-hero:hover {
-    border-color: var(--border-strong);
-    background: var(--bg-hover);
-  }
-
-  .hotkey-hero:focus-visible {
-    outline: 1px solid var(--accent);
-    outline-offset: 2px;
-  }
-
-  .hotkey-hero.capturing {
-    border-color: var(--accent);
-    background: var(--accent-dim);
-  }
-
-  .hero-edit {
-    position: absolute;
-    top: 12px;
-    right: 14px;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.04em;
-    color: var(--fg-faint);
-    opacity: 0;
-    transition: opacity 0.15s ease;
-  }
-
-  .hotkey-hero:hover .hero-edit {
-    opacity: 1;
-  }
-
-  .hero-keys {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 56px;
-  }
-
-  .hero-kbd {
-    font-family: var(--mono);
-    font-size: 26px;
-    font-weight: 500;
-    padding: 9px 18px 12px;
-    border-radius: 10px;
-    border: 1px solid var(--border-strong);
-    border-bottom-width: 3px;
-    background: var(--bg);
-    color: var(--fg);
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .hero-plus {
-    font-family: var(--mono);
-    font-size: 17px;
-    color: var(--fg-faint);
-  }
-
-  .hero-prompt {
-    font-family: var(--mono);
-    font-size: 19px;
-    letter-spacing: 0.01em;
-    color: var(--accent);
-  }
-
-  .hero-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-  }
-
-  .hero-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--fg);
-  }
-
-  .hero-hint {
-    font-size: 11.5px;
-    color: var(--fg-faint);
-  }
-
-  .recording-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: blink 1s ease-in-out infinite;
-  }
-
-  .recording-dot.big {
-    width: 9px;
-    height: 9px;
-  }
-
-  @keyframes blink {
-    50% {
-      opacity: 0.25;
-    }
-  }
-
-  .segmented {
-    display: inline-flex;
-    border: 1px solid var(--border-strong);
-    border-radius: 5px;
-    overflow: hidden;
-  }
-
-  .seg {
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 5px 12px;
-    border: none;
-    background: transparent;
-    color: var(--fg-muted);
-    cursor: pointer;
-    transition: background 0.12s ease;
-  }
-
-  .seg + .seg {
-    border-left: 1px solid var(--border);
-  }
-
-  .seg:hover {
-    background: var(--bg-hover);
-  }
-
-  .seg.on {
-    background: var(--accent-dim);
-    color: var(--accent);
-  }
-
-  select {
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 5px 28px 5px 10px;
-    border-radius: 5px;
-    border: 1px solid var(--border-strong);
-    background: var(--bg) no-repeat right 9px center;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%2397978f' fill='none'/%3E%3C/svg%3E");
-    color: var(--fg);
-    appearance: none;
-    cursor: pointer;
-  }
-
-  select:hover {
-    background-color: var(--bg-hover);
-  }
-
-  /* ————— models ————— */
-
-  .models {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .model {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 18px;
-    padding: 13px 10px;
-    margin: 0 -10px;
-    border-bottom: 1px solid var(--border);
-    border-radius: 6px;
-    transition: background 0.12s ease;
-  }
-
-  .model:hover {
-    background: var(--bg-raised);
-  }
-
-  .model-main {
-    min-width: 0;
-  }
-
-  .model-name {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .model-name strong {
-    font-weight: 600;
-    font-size: 13px;
-  }
-
-  .active-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 6px rgba(122, 162, 247, 0.55);
-    flex: none;
-  }
-
-  .tag {
-    font-family: var(--mono);
-    font-size: 9.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--fg-faint);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 1px 5px;
-  }
-
-  .model-desc {
-    margin: 3px 0 0;
-    font-size: 12px;
-    color: var(--fg-muted);
-    line-height: 1.45;
-  }
-
-  .model-side {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: none;
-    padding-top: 1px;
-  }
-
-  .size {
-    color: var(--fg-faint);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .active-label {
-    color: var(--accent);
-  }
-
-  .progress {
-    margin-top: 10px;
-    height: 2px;
-    border-radius: 1px;
-    background: var(--border);
-    overflow: hidden;
-  }
-
-  .progress-bar {
-    height: 100%;
-    background: var(--accent);
-    transition: width 0.25s ease;
-  }
-
-  .progress-bar.indeterminate {
-    animation: pulse 1.1s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    50% {
-      opacity: 0.35;
-    }
-  }
-
-  .progress-label {
-    display: inline-block;
-    margin-top: 6px;
-    color: var(--fg-faint);
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* ————— tabs ————— */
-
-  .tabs {
-    display: flex;
-    gap: 20px;
-    margin-top: 22px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .tab {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    padding: 7px 1px 9px;
-    background: none;
-    border: none;
-    border-bottom: 1px solid transparent;
-    margin-bottom: -1px;
-    color: var(--fg-faint);
-    cursor: pointer;
-    transition: color 0.12s ease;
-  }
-
-  .tab:hover {
-    color: var(--fg-muted);
-  }
-
-  .tab.on {
-    color: var(--fg);
-    border-bottom-color: var(--fg);
-  }
-
-  .count {
-    margin-left: 6px;
-    color: var(--fg-faint);
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* ————— history ————— */
-
-  .history-tools {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    padding: 14px 0 4px;
-  }
-
-  .search {
-    flex: 1;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.02em;
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid var(--border-strong);
-    background: transparent;
-    color: var(--fg);
-  }
-
-  .search::placeholder {
-    color: var(--fg-faint);
-  }
-
-  .search:focus-visible {
-    outline: 1px solid var(--accent);
-    outline-offset: 1px;
-  }
-
-  .day {
-    color: var(--fg-faint);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin: 18px 0 2px;
-  }
-
-  .btn.small {
-    padding: 2.5px 9px;
-    font-size: 10.5px;
-  }
-
-  .empty {
-    color: var(--fg-faint);
-    padding: 12px 0;
-    margin: 0;
-  }
-
-  .history {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .entry {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 9px 10px;
-    margin: 0 -10px;
-    border-bottom: 1px solid var(--border);
-    border-radius: 6px;
-  }
-
-  .entry:hover {
-    background: var(--bg-raised);
-  }
-
-  .when {
-    color: var(--fg-faint);
-    flex: none;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .entry-text {
-    flex: 1;
-    min-width: 0;
-    font-size: 12.5px;
-    color: var(--fg-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .entry-actions {
-    flex: none;
-    display: flex;
-    gap: 6px;
-    visibility: hidden;
-  }
-
-  .entry:hover .entry-actions {
-    visibility: visible;
-  }
-
-  .btn.del {
-    padding: 2.5px 8px;
-    line-height: 1;
-  }
-</style>

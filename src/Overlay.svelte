@@ -65,90 +65,16 @@
   });
 </script>
 
-<div class="pill" class:error={phase === "error"}>
+<div class="box-border m-1 h-[calc(100vh-8px)] flex items-center justify-center rounded-[100px] bg-[#101114] border border-white/10 overflow-hidden animate-[pop_0.16s_cubic-bezier(0.2,0.9,0.3,1.2)_both] {phase === 'error' ? '!border-danger/55' : ''}">
   {#if phase === "error"}
-    <span class="error-dot" aria-hidden="true"></span>
+    <span class="w-[7px] h-[7px] rounded-full bg-danger" aria-hidden="true"></span>
   {:else if phase === "recording"}
-    <div class="bars" aria-hidden="true">
+    <div class="flex items-center gap-1 h-[26px]" aria-hidden="true">
       {#each bars as b}
-        <span class="bar" style="height: {(b * 24).toFixed(1)}px"></span>
+        <span class="w-[4.5px] min-h-[4.5px] rounded-full bg-white transition-[height] duration-[60ms] linear" style="height: {(b * 24).toFixed(1)}px"></span>
       {/each}
     </div>
   {:else}
-    <span class="spinner" aria-hidden="true"></span>
+    <span class="w-3 h-3 rounded-full border-[1.5px] border-white/14 border-t-accent animate-[spin_0.8s_linear_infinite]" aria-hidden="true"></span>
   {/if}
 </div>
-
-<style>
-  :global(html),
-  :global(body) {
-    background: transparent;
-  }
-
-  .pill {
-    box-sizing: border-box;
-    margin: 4px;
-    height: calc(100vh - 8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 100px;
-    background: #101114;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    overflow: hidden;
-    animation: pop 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
-  }
-
-  @keyframes pop {
-    from {
-      opacity: 0;
-      transform: translateY(6px) scale(0.96);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .pill.error {
-    border-color: rgba(207, 122, 109, 0.55);
-  }
-
-  .bars {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    height: 26px;
-  }
-
-  .bar {
-    width: 4.5px;
-    min-height: 4.5px;
-    border-radius: 999px;
-    background: #ffffff;
-    transition: height 60ms linear;
-  }
-
-  .spinner {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.14);
-    border-top-color: #7aa2f7;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .error-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #cf7a6d;
-  }
-
-</style>

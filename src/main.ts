@@ -1,3 +1,4 @@
+import "./app.css";
 import { mount } from "svelte";
 import { installDevMockIfNeeded } from "./lib/devMock";
 import App from "./App.svelte";

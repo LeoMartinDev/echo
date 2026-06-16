@@ -76,13 +76,11 @@ const en = {
   yesterday: "yesterday",
 
   // — update —
-  update_available:
-    "Version {version} is available",
+  update_available: "Version {version} is available",
   update_restart: "restart",
 
   // — overlay —
-  overlay_no_field:
-    "No text field detected — the text will be copied to the clipboard",
+  overlay_no_field: "No text field detected — the text will be copied to the clipboard",
 
   // — transcription languages (LANGUAGES) —
   lang_auto: "Automatic detection",
@@ -174,12 +172,10 @@ const fr: Dict = {
   today: "aujourd'hui",
   yesterday: "hier",
 
-  update_available:
-    "La version {version} est disponible",
+  update_available: "La version {version} est disponible",
   update_restart: "redémarrer",
 
-  overlay_no_field:
-    "Aucun champ texte détecté — le texte sera copié dans le presse-papiers",
+  overlay_no_field: "Aucun champ texte détecté — le texte sera copié dans le presse-papiers",
 
   lang_auto: "Détection automatique",
   lang_fr: "Français",

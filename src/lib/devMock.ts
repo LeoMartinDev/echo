@@ -54,8 +54,7 @@ export function installDevMockIfNeeded() {
     {
       id: "whisper-medium-q5",
       name: "Whisper Medium",
-      description:
-        "Précision élevée, ~100 langues. Plus lourd que Small — idéal hors mode direct.",
+      description: "Précision élevée, ~100 langues. Plus lourd que Small — idéal hors mode direct.",
       engine: "whisper",
       size_mb: 539,
       downloaded: false,
@@ -71,6 +70,7 @@ export function installDevMockIfNeeded() {
       (window as unknown as Record<string, unknown>)[`_${id}`] = cb;
       return id;
     },
+    // deno-lint-ignore require-await
     async invoke(cmd: string, args: Record<string, unknown> = {}) {
       switch (cmd) {
         case "get_settings":

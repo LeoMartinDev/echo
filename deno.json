@@ -1,0 +1,27 @@
+{
+  "lock": true,
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "trailingCommas": "onlyMultiLine",
+    "quoteProps": "asNeeded",
+    "include": ["src/"],
+    "exclude": ["dist/", "node_modules/", "target/", "src-tauri/"]
+  },
+  "lint": {
+    "include": ["src/"],
+    "exclude": ["dist/", "node_modules/", "target/", "src-tauri/"],
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": ["no-sloppy-imports"]
+    }
+  },
+  "tasks": {
+    "fmt": "deno fmt",
+    "lint": "deno lint",
+    "check": "deno lint && deno fmt --check"
+  }
+}

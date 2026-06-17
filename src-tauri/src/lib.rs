@@ -8,6 +8,9 @@ mod settings;
 mod state;
 mod typing;
 
+// Keep time pinned for downstream crate compatibility (see Cargo.toml).
+use time as _;
+
 use serde::Serialize;
 use settings::AppSettings;
 use state::AppState;
@@ -31,7 +34,11 @@ struct ModelInfo {
 
 #[tauri::command]
 fn get_settings(state: tauri::State<AppState>) -> AppSettings {
-    state.settings.lock().unwrap_or_else(|e| e.into_inner()).clone()
+    state
+        .settings
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone()
 }
 
 #[tauri::command]
@@ -61,8 +68,11 @@ fn set_settings(
     if old.autostart != new_settings.autostart {
         use tauri_plugin_autostart::ManagerExt;
         let manager = app.autolaunch();
-        let result =
-            if new_settings.autostart { manager.enable() } else { manager.disable() };
+        let result = if new_settings.autostart {
+            manager.enable()
+        } else {
+            manager.disable()
+        };
         if let Err(e) = result {
             let mut guard = state.settings.lock().unwrap_or_else(|e| e.into_inner());
             guard.autostart = old.autostart;
@@ -90,7 +100,12 @@ fn set_settings(
 
 #[tauri::command]
 fn list_models(app: AppHandle, state: tauri::State<AppState>) -> Vec<ModelInfo> {
-    let active_id = state.settings.lock().unwrap_or_else(|e| e.into_inner()).model_id.clone();
+    let active_id = state
+        .settings
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .model_id
+        .clone();
     let downloads = state.downloads.lock().unwrap_or_else(|e| e.into_inner());
     models::CATALOG
         .iter()
@@ -204,9 +219,16 @@ fn set_hotkey_capture(
     capturing: bool,
 ) -> Result<(), String> {
     if capturing {
-        app.global_shortcut().unregister_all().map_err(|e| e.to_string())
+        app.global_shortcut()
+            .unregister_all()
+            .map_err(|e| e.to_string())
     } else {
-        let hotkey = state.settings.lock().unwrap_or_else(|e| e.into_inner()).hotkey.clone();
+        let hotkey = state
+            .settings
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .hotkey
+            .clone();
         register_hotkey(&app, &hotkey)
     }
 }
@@ -240,7 +262,9 @@ fn preload_engine(app: &AppHandle) {
             .unwrap_or_else(|e| e.into_inner())
             .model_id
             .clone();
-        let Some(spec) = models::spec(&model_id) else { return };
+        let Some(spec) = models::spec(&model_id) else {
+            return;
+        };
         if !models::is_downloaded(&app, spec) {
             return;
         }
@@ -391,8 +415,11 @@ pub fn run() {
                 let fallback = AppSettings::default().hotkey;
                 if register_hotkey(&handle, &fallback).is_ok() {
                     let state = handle.state::<AppState>();
-                    state.settings.lock().unwrap_or_else(|e| e.into_inner()).hotkey =
-                        fallback;
+                    state
+                        .settings
+                        .lock()
+                        .unwrap_or_else(|e| e.into_inner())
+                        .hotkey = fallback;
                 }
             }
 

@@ -12,7 +12,6 @@ use transcribe_rs::TranscribeOptions;
 /// Maximum dictation duration.
 const MAX_RECORDING: Duration = Duration::from_secs(10 * 60);
 
-
 #[derive(Clone, Serialize)]
 struct Phase<'a> {
     phase: &'a str,
@@ -37,22 +36,26 @@ pub fn start(app: &AppHandle) {
     if state.recording.swap(true, Ordering::SeqCst) {
         return;
     }
-    let generation = state.generation.fetch_add(1, Ordering::SeqCst).wrapping_add(1);
+    let generation = state
+        .generation
+        .fetch_add(1, Ordering::SeqCst)
+        .wrapping_add(1);
 
-    state.samples.lock().unwrap_or_else(|e| e.into_inner()).clear();
+    state
+        .samples
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clear();
 
-    let stop_tx = match audio::start_capture(
-        app.clone(),
-        state.samples.clone(),
-        state.src_rate.clone(),
-    ) {
-        Ok(tx) => tx,
-        Err(e) => {
-            state.recording.store(false, Ordering::SeqCst);
-            show_error(app, &e);
-            return;
-        }
-    };
+    let stop_tx =
+        match audio::start_capture(app.clone(), state.samples.clone(), state.src_rate.clone()) {
+            Ok(tx) => tx,
+            Err(e) => {
+                state.recording.store(false, Ordering::SeqCst);
+                show_error(app, &e);
+                return;
+            }
+        };
     *state.capture_stop.lock().unwrap_or_else(|e| e.into_inner()) = Some(stop_tx);
 
     show_overlay(app);
@@ -66,7 +69,11 @@ pub fn start(app: &AppHandle) {
 pub fn stop(app: &AppHandle) {
     let state = app.state::<AppState>();
     state.recording.store(false, Ordering::SeqCst);
-    let tx = state.capture_stop.lock().unwrap_or_else(|e| e.into_inner()).take();
+    let tx = state
+        .capture_stop
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .take();
     if let Some(tx) = tx {
         let _ = tx.send(());
     }
@@ -76,7 +83,12 @@ fn worker(app: AppHandle, generation: u32) {
     let state = app.state::<AppState>();
     let (model_id, language, insertion_mode, history_enabled) = {
         let s = state.settings.lock().unwrap_or_else(|e| e.into_inner());
-        (s.model_id.clone(), s.language.clone(), s.insertion_mode, s.history_enabled)
+        (
+            s.model_id.clone(),
+            s.language.clone(),
+            s.insertion_mode,
+            s.history_enabled,
+        )
     };
 
     let focus_bad = crate::focus::editable_focused() == Some(false);
@@ -84,7 +96,8 @@ fn worker(app: AppHandle, generation: u32) {
 
     let mut slot = state.engine.lock().unwrap_or_else(|e| e.into_inner());
 
-    let needs_load = !(slot.model_id.as_deref() == Some(model_id.as_str()) && slot.engine.is_some());
+    let needs_load =
+        !(slot.model_id.as_deref() == Some(model_id.as_str()) && slot.engine.is_some());
     if needs_load && is_current(&state, generation) {
         emit_phase(&app, "loading_model", None);
     }
@@ -100,7 +113,10 @@ fn worker(app: AppHandle, generation: u32) {
     }
 
     let engine = slot.engine.as_mut().expect("engine loaded above");
-    let options = TranscribeOptions { language, ..Default::default() };
+    let options = TranscribeOptions {
+        language,
+        ..Default::default()
+    };
 
     let mut typer = match typing::Typer::new() {
         Ok(t) => Some(t),
@@ -122,7 +138,15 @@ fn worker(app: AppHandle, generation: u32) {
     let mut transcriber = VadChunked::new(Box::new(vad), vad_config, options);
 
     let started = Instant::now();
-    chunked_loop(&app, &state, engine, &mut transcriber, live, &mut typer, started);
+    chunked_loop(
+        &app,
+        &state,
+        engine,
+        &mut transcriber,
+        live,
+        &mut typer,
+        started,
+    );
 
     if is_current(&state, generation) {
         emit_phase(&app, "transcribing", None);
@@ -142,9 +166,18 @@ fn worker(app: AppHandle, generation: u32) {
     emit_partial(&app, &final_text);
 
     if history_enabled && !final_text.is_empty() {
-        let total_samples = state.samples.lock().unwrap_or_else(|e| e.into_inner()).len();
+        let total_samples = state
+            .samples
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .len();
         let rate = state.src_rate.load(Ordering::Relaxed).max(8000);
-        crate::history::append(&app, &final_text, &model_id, total_samples as f32 / rate as f32);
+        crate::history::append(
+            &app,
+            &final_text,
+            &model_id,
+            total_samples as f32 / rate as f32,
+        );
         let _ = app.emit("echo://history", ());
     }
 
@@ -165,7 +198,7 @@ fn worker(app: AppHandle, generation: u32) {
 
     if !final_text.is_empty() && (focus_bad || !typed_ok) {
         use tauri_plugin_clipboard_manager::ClipboardExt;
-        if let Err(e) = app.clipboard().write_text(final_text.clone()) {
+        if let Err(e) = app.clipboard().write_text(final_text) {
             eprintln!("[echo] clipboard: {e}");
         }
     }
@@ -251,6 +284,56 @@ fn join_text(a: &str, b: &str) -> String {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn join_both_non_empty() {
+        assert_eq!(join_text("hello", "world"), "hello world");
+    }
+
+    #[test]
+    fn join_first_empty() {
+        assert_eq!(join_text("", "world"), "world");
+        assert_eq!(join_text("  ", "world"), "world");
+    }
+
+    #[test]
+    fn join_second_empty() {
+        assert_eq!(join_text("hello", ""), "hello");
+        assert_eq!(join_text("hello", "  "), "hello");
+    }
+
+    #[test]
+    fn join_both_empty() {
+        assert_eq!(join_text("", ""), "");
+        assert_eq!(join_text("  ", "\t"), "");
+    }
+
+    #[test]
+    fn join_trims_whitespace() {
+        assert_eq!(join_text("  hello  ", "  world  "), "hello world");
+        assert_eq!(join_text("hello\n", "\tworld"), "hello world");
+    }
+
+    #[test]
+    fn join_chinese_no_extra_spacing() {
+        // No artificial space between CJK characters (they have no inter-word space).
+        assert_eq!(join_text("你好", "世界"), "你好 世界");
+    }
+
+    #[test]
+    fn join_single_word_each() {
+        assert_eq!(join_text("bonjour", "le monde"), "bonjour le monde");
+    }
+
+    #[test]
+    fn join_with_trailing_punctuation() {
+        assert_eq!(join_text("Hello,", "world!"), "Hello, world!");
+    }
+}
+
 fn show_error(app: &AppHandle, message: &str) {
     eprintln!("[echo] error: {message}");
     show_overlay(app);
@@ -264,7 +347,9 @@ fn show_error(app: &AppHandle, message: &str) {
 }
 
 fn show_overlay(app: &AppHandle) {
-    let Some(win) = app.get_webview_window("overlay") else { return };
+    let Some(win) = app.get_webview_window("overlay") else {
+        return;
+    };
 
     let monitor = app
         .cursor_position()

@@ -11,7 +11,10 @@ pub struct EngineSlot {
 
 impl EngineSlot {
     pub fn empty() -> Self {
-        Self { model_id: None, engine: None }
+        Self {
+            model_id: None,
+            engine: None,
+        }
     }
 
     pub fn clear(&mut self) {
@@ -51,5 +54,36 @@ impl EngineSlot {
         self.model_id = Some(model_id.to_string());
         self.engine = Some(engine);
         Ok(true)
+    }
+}
+
+#[cfg(test)]
+mod engine_tests {
+    use super::*;
+
+    #[test]
+    fn empty_slot_is_empty() {
+        let slot = EngineSlot::empty();
+        assert!(slot.model_id.is_none());
+        assert!(slot.engine.is_none());
+    }
+
+    #[test]
+    fn clear_empties_slot() {
+        let mut slot = EngineSlot {
+            model_id: Some("whisper-small".into()),
+            engine: None,
+        };
+        slot.clear();
+        assert!(slot.model_id.is_none());
+        assert!(slot.engine.is_none());
+    }
+
+    #[test]
+    fn clear_idempotent() {
+        let mut slot = EngineSlot::empty();
+        slot.clear();
+        assert!(slot.model_id.is_none());
+        assert!(slot.engine.is_none());
     }
 }

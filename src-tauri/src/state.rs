@@ -38,3 +38,36 @@ impl AppState {
         }
     }
 }
+
+#[cfg(test)]
+mod state_tests {
+    use super::*;
+    use std::sync::atomic::Ordering;
+
+    #[test]
+    fn new_state_defaults() {
+        let s = AppState::new(AppSettings::default());
+        assert!(!s.recording.load(Ordering::SeqCst));
+        assert_eq!(s.generation.load(Ordering::SeqCst), 0);
+        assert_eq!(s.src_rate.load(Ordering::Relaxed), 48_000);
+        assert!(s.samples.lock().unwrap().is_empty());
+        assert!(s.capture_stop.lock().unwrap().is_none());
+        assert!(s.downloads.lock().unwrap().is_empty());
+    }
+
+    #[test]
+    fn new_state_preserves_settings() {
+        let mut settings = AppSettings::default();
+        settings.model_id = "whisper-small".to_string();
+        let s = AppState::new(settings);
+        assert_eq!(s.settings.lock().unwrap().model_id, "whisper-small");
+    }
+
+    #[test]
+    fn engine_slot_starts_empty() {
+        let s = AppState::new(AppSettings::default());
+        let slot = s.engine.lock().unwrap();
+        assert!(slot.model_id.is_none());
+        assert!(slot.engine.is_none());
+    }
+}

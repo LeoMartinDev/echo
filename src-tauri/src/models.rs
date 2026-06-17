@@ -59,6 +59,58 @@ pub fn spec(id: &str) -> Option<&'static ModelSpec> {
     CATALOG.iter().find(|m| m.id == id)
 }
 
+#[cfg(test)]
+mod models_tests {
+    use super::*;
+
+    #[test]
+    fn catalog_has_no_duplicate_ids() {
+        let mut seen = std::collections::HashSet::new();
+        for m in CATALOG {
+            assert!(seen.insert(m.id), "duplicate model id: {}", m.id);
+        }
+    }
+
+    #[test]
+    fn all_entries_have_nonempty_url() {
+        for m in CATALOG {
+            assert!(!m.url.is_empty(), "model '{}' has empty URL", m.id);
+        }
+    }
+
+    #[test]
+    fn all_entries_have_positive_size() {
+        for m in CATALOG {
+            assert!(m.size_mb > 0, "model '{}' has zero size", m.id);
+        }
+    }
+
+    #[test]
+    fn spec_known_models() {
+        assert!(spec("parakeet-tdt-0.6b-v3").is_some());
+        assert!(spec("whisper-small").is_some());
+        assert!(spec("whisper-medium-q5").is_some());
+    }
+
+    #[test]
+    fn spec_unknown() {
+        assert!(spec("nonexistent").is_none());
+        assert!(spec("").is_none());
+    }
+
+    #[test]
+    fn spec_returns_correct_engine() {
+        assert_eq!(
+            spec("parakeet-tdt-0.6b-v3").map(|m| m.engine),
+            Some(EngineKind::Parakeet)
+        );
+        assert_eq!(
+            spec("whisper-small").map(|m| m.engine),
+            Some(EngineKind::Whisper)
+        );
+    }
+}
+
 pub fn models_dir(app: &AppHandle) -> anyhow::Result<PathBuf> {
     let dir = app.path().app_data_dir()?.join("models");
     fs::create_dir_all(&dir)?;
@@ -122,7 +174,13 @@ pub async fn download(app: AppHandle, id: String) -> Result<(), String> {
     match &result {
         Ok(()) => emit_progress(
             &app,
-            DownloadProgress { id: spec.id, received: 0, total: None, status: "done", error: None },
+            DownloadProgress {
+                id: spec.id,
+                received: 0,
+                total: None,
+                status: "done",
+                error: None,
+            },
         ),
         Err(e) => {
             let _ = fs::remove_dir_all(&dir);
@@ -144,7 +202,11 @@ pub async fn download(app: AppHandle, id: String) -> Result<(), String> {
 async fn download_inner(app: &AppHandle, spec: &ModelSpec, dir: &Path) -> Result<(), String> {
     use futures_util::StreamExt;
 
-    let target = if spec.archive { dir.join("download.tar.gz") } else { dir.join("model.bin") };
+    let target = if spec.archive {
+        dir.join("download.tar.gz")
+    } else {
+        dir.join("model.bin")
+    };
     let tmp = dir.join("download.part");
 
     let client = reqwest::Client::new();
@@ -187,7 +249,13 @@ async fn download_inner(app: &AppHandle, spec: &ModelSpec, dir: &Path) -> Result
     if spec.archive {
         emit_progress(
             app,
-            DownloadProgress { id: spec.id, received, total, status: "extracting", error: None },
+            DownloadProgress {
+                id: spec.id,
+                received,
+                total,
+                status: "extracting",
+                error: None,
+            },
         );
         let archive_path = target.clone();
         let extract_dir = dir.to_path_buf();
@@ -195,7 +263,9 @@ async fn download_inner(app: &AppHandle, spec: &ModelSpec, dir: &Path) -> Result
             let file = fs::File::open(&archive_path).map_err(|e| e.to_string())?;
             let gz = flate2::read::GzDecoder::new(file);
             let mut archive = tar::Archive::new(gz);
-            archive.unpack(&extract_dir).map_err(|e| format!("Extraction impossible : {e}"))?;
+            archive
+                .unpack(&extract_dir)
+                .map_err(|e| format!("Extraction impossible : {e}"))?;
             fs::remove_file(&archive_path).map_err(|e| e.to_string())?;
             Ok(())
         })

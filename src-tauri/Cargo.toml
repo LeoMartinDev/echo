@@ -52,3 +52,48 @@ tauri-plugin-updater = "2"
 [profile.release]
 lto = true
 codegen-units = 1
+
+[lints.rust]
+unsafe_code = "warn"
+
+[lints.clippy]
+# Enable broad lint coverage, then selectively allow what the project needs.
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+cargo = { level = "warn", priority = -1 }
+
+# Allowed: too noisy or not applicable to this project.
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+struct_field_names = "allow"
+wildcard_imports = "allow"
+cast_precision_loss = "allow"
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+cast_lossless = "allow"
+cast_possible_wrap = "allow"
+unreadable_literal = "allow"
+unseparated_literal_suffix = "allow"
+# Allowed: Tauri commands require specific signatures.
+unused_async = "allow"
+# Allowed: too many false positives on platform-gated code.
+doc_markdown = "allow"
+# Allowed: PoisonError::into_inner is the standard Mutex recovery idiom.
+redundant_closure_for_method_calls = "allow"
+# Allowed: package metadata is not required for an application.
+cargo_common_metadata = "allow"
+# Allowed: the worker function is intentionally long (single dictation session).
+too_many_lines = "allow"
+# Allowed: channel/mutex ownership patterns are idiomatic for audio threading.
+needless_pass_by_value = "allow"
+significant_drop_tightening = "allow"
+# Allowed: style preferences that don't affect correctness.
+suboptimal_flops = "allow"
+missing_const_for_fn = "allow"
+map_unwrap_or = "allow"
+items_after_statements = "allow"
+duration_suboptimal_units = "allow"
+manual_is_multiple_of = "allow"
+assigning_clones = "allow"

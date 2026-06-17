@@ -22,8 +22,12 @@ fn history_path(app: &AppHandle) -> anyhow::Result<PathBuf> {
 }
 
 fn load(app: &AppHandle) -> Vec<HistoryEntry> {
-    let Ok(path) = history_path(app) else { return Vec::new() };
-    let Ok(raw) = fs::read_to_string(path) else { return Vec::new() };
+    let Ok(path) = history_path(app) else {
+        return Vec::new();
+    };
+    let Ok(raw) = fs::read_to_string(path) else {
+        return Vec::new();
+    };
     raw.lines()
         .filter_map(|line| serde_json::from_str(line).ok())
         .collect()
@@ -79,4 +83,50 @@ pub fn clear(app: &AppHandle) -> Result<(), String> {
         fs::remove_file(path).map_err(|e| e.to_string())?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod history_tests {
+    use super::*;
+
+    #[test]
+    fn entry_json_roundtrip() {
+        let entry = HistoryEntry {
+            ts_ms: 1718198400123,
+            text: "Hello world".to_string(),
+            model_id: "parakeet-tdt-0.6b-v3".to_string(),
+            duration_secs: 3.5,
+        };
+        let json = serde_json::to_string(&entry).unwrap();
+        let rt: HistoryEntry = serde_json::from_str(&json).unwrap();
+        assert_eq!(rt.ts_ms, entry.ts_ms);
+        assert_eq!(rt.text, entry.text);
+        assert_eq!(rt.model_id, entry.model_id);
+        assert!((rt.duration_secs - entry.duration_secs).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn entry_deser_minimal() {
+        let json = r#"{"ts_ms":0,"text":"","model_id":"whisper-small","duration_secs":0.0}"#;
+        let entry: HistoryEntry = serde_json::from_str(json).unwrap();
+        assert_eq!(entry.ts_ms, 0);
+        assert_eq!(entry.text, "");
+        assert_eq!(entry.model_id, "whisper-small");
+        assert!(entry.duration_secs < f32::EPSILON);
+    }
+
+    #[test]
+    fn entry_serde_keys_present() {
+        let entry = HistoryEntry {
+            ts_ms: 1,
+            text: "x".into(),
+            model_id: "m".into(),
+            duration_secs: 2.0,
+        };
+        let json = serde_json::to_string(&entry).unwrap();
+        assert!(json.contains("ts_ms"));
+        assert!(json.contains("text"));
+        assert!(json.contains("model_id"));
+        assert!(json.contains("duration_secs"));
+    }
 }

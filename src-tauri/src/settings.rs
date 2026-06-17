@@ -96,6 +96,55 @@ pub fn load(app: &AppHandle) -> AppSettings {
     settings
 }
 
+#[cfg(test)]
+mod settings_tests {
+    use super::*;
+
+    fn settings_with(lang: Option<&str>) -> AppSettings {
+        let mut s = AppSettings::default();
+        s.ui_language = lang.map(|l| l.to_string());
+        s
+    }
+
+    #[test]
+    fn explicit_french() {
+        let s = settings_with(Some("fr"));
+        assert_eq!(resolve_locale(&s), "fr");
+    }
+
+    #[test]
+    fn explicit_english() {
+        let s = settings_with(Some("en"));
+        assert_eq!(resolve_locale(&s), "en");
+    }
+
+    #[test]
+    fn explicit_fr_with_region_suffix() {
+        let s = settings_with(Some("fr-FR"));
+        assert_eq!(resolve_locale(&s), "fr");
+    }
+
+    #[test]
+    fn explicit_en_with_region_suffix() {
+        let s = settings_with(Some("en-GB"));
+        assert_eq!(resolve_locale(&s), "en");
+    }
+
+    #[test]
+    fn explicit_unsupported_falls_back() {
+        let s = settings_with(Some("de"));
+        let resolved = resolve_locale(&s);
+        assert!(resolved == "en" || resolved == "fr");
+    }
+
+    #[test]
+    fn no_explicit_locale_returns_supported() {
+        let s = settings_with(None);
+        let resolved = resolve_locale(&s);
+        assert!(resolved == "en" || resolved == "fr");
+    }
+}
+
 pub fn save(app: &AppHandle, settings: &AppSettings) -> anyhow::Result<()> {
     let path = settings_path(app)?;
     fs::write(path, serde_json::to_string_pretty(settings)?)?;

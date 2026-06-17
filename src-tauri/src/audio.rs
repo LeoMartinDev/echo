@@ -55,9 +55,15 @@ fn capture_thread(
     let err_fn = |e| eprintln!("[echo] erreur du flux audio : {e}");
 
     let stream = match sample_format {
-        cpal::SampleFormat::F32 => build_stream::<f32>(&device, stream_config, app, samples, channels, err_fn),
-        cpal::SampleFormat::I16 => build_stream::<i16>(&device, stream_config, app, samples, channels, err_fn),
-        cpal::SampleFormat::U16 => build_stream::<u16>(&device, stream_config, app, samples, channels, err_fn),
+        cpal::SampleFormat::F32 => {
+            build_stream::<f32>(&device, stream_config, app, samples, channels, err_fn)
+        }
+        cpal::SampleFormat::I16 => {
+            build_stream::<i16>(&device, stream_config, app, samples, channels, err_fn)
+        }
+        cpal::SampleFormat::U16 => {
+            build_stream::<u16>(&device, stream_config, app, samples, channels, err_fn)
+        }
         other => Err(format!("Format audio non géré : {other:?}")),
     };
 
@@ -138,8 +144,82 @@ pub fn resample_to_16k(input: &[f32], src_rate: u32) -> Vec<f32> {
         let idx = pos as usize;
         let frac = (pos - idx as f64) as f32;
         let a = input[idx];
-        let b = if idx + 1 < input.len() { input[idx + 1] } else { a };
+        let b = if idx + 1 < input.len() {
+            input[idx + 1]
+        } else {
+            a
+        };
         out.push(a + (b - a) * frac);
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn resample_target_rate_is_identity() {
+        let samples: Vec<f32> = (0..200).map(|i| i as f32 * 0.001).collect();
+        let resampled = resample_to_16k(&samples, TARGET_RATE);
+        assert_eq!(resampled, samples);
+    }
+
+    #[test]
+    fn resample_empty_is_empty() {
+        let resampled = resample_to_16k(&[], 48_000);
+        assert!(resampled.is_empty());
+    }
+
+    #[test]
+    fn resample_down_from_48k_preserves_len_ratio() {
+        // 48k -> 16k: 3:1 ratio, 480 samples -> ~160 samples
+        let samples = vec![1.0f32; 480];
+        let resampled = resample_to_16k(&samples, 48_000);
+        assert_eq!(resampled.len(), 160);
+        // All values should still be 1.0 (constant signal is preserved).
+        for v in &resampled {
+            assert!((v - 1.0).abs() < f32::EPSILON);
+        }
+    }
+
+    #[test]
+    fn resample_down_from_44k1_approximate() {
+        // 44100 -> 16000: ratio ~2.75625, 441 samples -> ~160 samples
+        let samples = vec![0.5f32; 441];
+        let resampled = resample_to_16k(&samples, 44_100);
+        assert_eq!(resampled.len(), 160);
+        for v in &resampled {
+            assert!((v - 0.5).abs() < f32::EPSILON);
+        }
+    }
+
+    #[test]
+    fn resample_single_sample_stays_single() {
+        // A single sample is too short for a 48k->16k downsampling
+        // (ratio 3:1 -> output length floor(1/3) = 0).
+        // Use enough samples so the math works out.
+        let samples = vec![0.75f32; 3];
+        let resampled = resample_to_16k(&samples, 48_000);
+        assert_eq!(resampled.len(), 1);
+        assert!((resampled[0] - 0.75).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn resample_linearly_increasing_signal() {
+        // For a linear ramp, interpolation should stay within range.
+        let samples: Vec<f32> = (0..1000).map(|i| i as f32).collect();
+        let resampled = resample_to_16k(&samples, 48_000);
+        assert!(!resampled.is_empty());
+        assert!(resampled.len() < samples.len());
+        // All output values must lie within the input range.
+        for v in &resampled {
+            assert!(*v >= 0.0);
+            assert!(*v <= 999.0);
+        }
+        // Should be monotonically non-decreasing (approximate).
+        for w in resampled.windows(2) {
+            assert!(w[0] <= w[1] + 1.0); // allow minor float wobble
+        }
+    }
 }
